@@ -1,0 +1,1448 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--  START VERSION CODE BLOCK  -->
+
+<!--%%[
+/*begin added cc*/
+/* RAC store address from previous programs */
+
+VAR @StoreToFind, @row, @rs, @line1, @line2, @line3, @line4, @header, @maplink, @store_flag, @version_cd, @line5, @line6, @line7, @URLappend
+SET @StoreToFind = IIF(EMPTY(TRIM(rac_home_store_no)),"0",TRIM(rac_home_store_no))
+SET @rs = LookupRows("RAC_Stores_Updated","store_no",@StoreToFind,"store_brand_name","Rent-A-Center","store_active_status_fg","Y")
+
+/*  START CELL CODE BLOCK  */
+
+IF TRIM(cell_cd) == "C001" THEN
+	SET @cell = "1"
+ELSEIF TRIM(cell_cd) == "C002" THEN
+	SET @cell = "2"
+ENDIF
+
+SET @cell = "1"
+SET @testing = "true"
+
+/*  END CELL CODE BLOCK  */
+/*  START TRACKING UTM CODE BLOCK  */
+
+SET @tracking_pt1_source = "extrgt"
+SET @tracking_pt2_utmsource = "eml-etrgt-rac-"
+SET @tracking_pt3_deploydates = "20220705"
+SET @tracking_pt6_sequence = "001"
+SET @tracking_pt7_campaign = "amana-co-op"
+
+SET @utm_track = CONCAT("?utm_medium=email&utm_source=",@tracking_pt1_source,"&utm_campaign=",@tracking_pt2_utmsource,@tracking_pt3_deploydates,"-em",@tracking_pt6_sequence,"-",@tracking_pt7_campaign,"&et_cid=",[jobid],"&et_rid=",[subscriberid],"&utm_content=")
+
+SET @utm_track_slash = CONCAT("/?utm_medium=email&utm_source=",@tracking_pt1_source,"&utm_campaign=",@tracking_pt2_utmsource,@tracking_pt3_deploydates,"-em",@tracking_pt6_sequence,"-",@tracking_pt7_campaign,"&et_cid=",[jobid],"&et_rid=",[subscriberid],"&utm_content=")
+
+SET @utm_track_and = CONCAT("&utm_medium=email&utm_source=",@tracking_pt1_source,"&utm_campaign=",@tracking_pt2_utmsource,@tracking_pt3_deploydates,"-em",@tracking_pt6_sequence,"-",@tracking_pt7_campaign,"&et_cid=",[jobid],"&et_rid=",[subscriberid],"&utm_content=")
+
+/*  END TRACKING UTM CODE BLOCK  */
+/*  START USER INFORMATION CODE BLOCK  */
+
+SET @first_name = ProperCase(TRIM(first_name))
+SET @last_name = ProperCase(TRIM(last_name))
+
+IF EMPTY(ProperCase(TRIM(CUSTOM_02))) THEN
+	SET @approval_amount = "0.00"
+ELSE
+	SET @approval_amount = FormatCurrency(ProperCase(TRIM(CUSTOM_02)),"en-US")
+ENDIF
+
+IF EMPTY(ProperCase(TRIM(CUSTOM_05))) THEN
+	SET @preapproval_amount_1 = "0.00"
+ELSE
+	SET @preapproval_amount_1 = FormatCurrency(ProperCase(TRIM(CUSTOM_05)),"en-US")
+ENDIF
+
+IF EMPTY(ProperCase(TRIM(CUSTOM_02))) THEN
+	SET @preapproval_amount_2 = "0.00"
+ELSE
+	SET @preapproval_amount_2 = FormatCurrency(ProperCase(TRIM(CUSTOM_02)),"en-US")
+ENDIF
+
+set @purchase_item = ProperCase(TRIM(CUSTOM_04))
+set @agreement_number = ProperCase(TRIM(CUSTOM_03))
+
+/* DYNAMIC DATE */
+SET @currentDate = Format(Now(), "MM/dd/yyyy")
+SET @futureDate = Format(DateAdd(Now(), "14", "D"), "MM/dd/yy")
+SET @farFutureDate = Format(DateAdd(Now(), "60", "D"), "MM/dd/yy")
+
+IF EMPTY(@StoreToFind) OR @StoreToFind == 0 or RowCount(@RS) == 0 THEN
+	SET @header = ""
+	SET @line1 = "Find a store near you."
+	SET @line2 = ""
+	SET @line3 = ""
+	SET @ALIAS_G19 = "findastore"
+	SET @URL_G19 = CONCAT("https://locations.rentacenter.com?",@utm_track,@ALIAS_G19)
+ELSE
+	SET @header = "My Store:"
+	SET @line1 = ProperCase(FIELD(ROW(@rs,1),"store_addr_line_1"))
+	SET @line2 = CONCAT(ProperCase(FIELD(Row(@rs,1),"store_city")),", ",FIELD(Row(@rs,1),"store_state_cd"))
+	SET @line3 = FIELD(Row(@rs,1),"store_zip")
+	SET @line6 = FIELD(Row(@rs,1),"store_phone_no")
+	IF FIELD(ROW(@rs,1),"store_license_display_fg") == 'Y' THEN
+		SET @line4 = ProperCase(FIELD(ROW(@rs,1),"store_license_formatted"))
+	ENDIF
+	SET @line5 = "dot"
+	SET @ALIAS_G19 = "location"
+	SET @URL_G19 = CONCAT("https://locations.rentacenter.com?",@utm_track,@ALIAS_G19)
+ELSE
+ENDIF
+
+/*  END USER INFORMATION CODE BLOCK  */
+/*  START CREATIVE VERSION CODE BLOCK  */
+
+SET @cv = "1"
+
+/*  END CREATIVE VERSION CODE BLOCK  */
+/*  START SUBJECT LINE / PREHEADER CODE BLOCK  */
+
+IF @cell == "1" THEN
+	/* SUBJECT LINES */
+	IF NOT EMPTY (@first_name) THEN
+		SET @SL_A = CONCAT("$10 Pays Your First Week On Amana® Appliances, ",@first_name)
+	ELSEIF EMPTY (@first_name) THEN
+		SET @SL_A = "$10 Pays Your First Week On Amana® Appliances"
+	ENDIF
+
+	ET @SL_B = "Get Your Amana® Appliances The Worry-Free Way"
+
+	/* PREHEADERS */
+	SET @PH_A = "Plus FREE Delivery! Get your appliances the worry-free way."
+	SET @PH_B = "Shop now and $10 pays your first week."
+ELSEIF @cell == "2" THEN
+	/* SUBJECT LINES */
+	IF NOT EMPTY (@first_name) THEN
+		SET @SL_A = CONCAT("Rent Amana® Appliances Worry-Free, ",@first_name)
+	ELSEIF EMPTY (@first_name) THEN
+		SET @SL_A = "Rent Amana® Appliances Worry-Free"
+	ENDIF
+
+	IF NOT EMPTY (@first_name) THEN
+		SET @SL_B = CONCAT("Save Energy, Money And Worry With Amana®, ",@first_name)
+	ELSEIF EMPTY (@first_name) THEN
+		SET @SL_B = "Save Energy, Money And Worry With Amana®"
+	ENDIF
+
+	/* PREHEADERS */
+	SET @PH_A = "Enjoy FREE delivery and flexible payment options on laundry and kitchen appliances."
+	SET @PH_B = "Rent energy-efficient Amana® laundry and kitchen appliances with flexible payments."
+ENDIF
+
+SET @SL = @SL_A
+SET @PH = @PH_A
+
+IF @cell == "1" THEN
+	SET @TESTSL = CONCAT("C001 Base: ",@SL)
+	SET @TESTPH = CONCAT("C001 Base: ",@PH)
+ELSEIF @cell == "2" THEN
+	SET @TESTSL = CONCAT("C002 RFI: ",@SL)
+	SET @TESTPH = CONCAT("C002 RFI: ",@PH)
+ENDIF
+
+IF @testing == "false" THEN
+	/* FINAL CHOICES */
+	SET @SL = @SL_A
+	SET @PH = @PH_A
+ELSE
+	/* FINAL CHOICES */
+	SET @SL = @TESTSL
+	SET @PH = @TESTPH
+ENDIF
+
+SET @sbj_line = @SL
+SET @PreHeader = @PH
+SET @sbj_line_cd = CONCAT("SL_", TRIM(creative_version_cd), "_A")
+SET @PreHeader_cd = CONCAT("PH_", TRIM(creative_version_cd), "_A")
+
+/*  END SUBJECT LINE / PREHEADER CODE BLOCK  */
+/*  START HEADER LINKS VERSION CODE BLOCK  */
+
+SET @RACLOGO_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/8359fe85-b0f2-4d38-bf04-4c9dee91954d.png"
+SET @RACLOGO_ALT = "RAC"
+SET @RACLOGO_ALIAS = "racl"
+SET @RACLOGO_URL = CONCAT("https://www.rentacenter.com/",@utm_track,@RACLOGO_ALIAS)
+
+SET @HEADER_FURNITURE_ALIAS = "furniture"
+SET @HEADER_FURNITURE_URL = CONCAT("https://www.rentacenter.com/furniture/c/1000",@utm_track,@HEADER_FURNITURE_ALIAS)
+
+SET @HEADER_APPLIANCES_ALIAS = "appliances"
+SET @HEADER_APPLIANCES_URL = CONCAT("https://www.rentacenter.com/appliances/c/2000",@utm_track,@HEADER_APPLIANCES_ALIAS)
+
+SET @HEADER_ELECTRONICS_ALIAS = "electronics"
+SET @HEADER_ELECTRONICS_URL = CONCAT("https://www.rentacenter.com/electronics/c/4000",@utm_track,@HEADER_ELECTRONICS_ALIAS)
+
+SET @HEADER_DEALS_ALIAS = "shopdeals"
+SET @HEADER_DEALS_URL = CONCAT("https://www.rentacenter.com/deals/c/6000",@utm_track,@HEADER_DEALS_ALIAS)
+
+/*  END HEADER LINKS VERSION CODE BLOCK  */
+/*  START PROMO HERO VERSION CODE BLOCK  */
+
+IF @cell == "1" THEN
+	SET @PROMOHERO_UPPER_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f5c3e5fc-9dbe-4618-8c84-dc06790dc0c6.png"
+	SET @PROMOHERO_LOWER_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f025b1e7-b91e-4b31-a65c-369451d2b7de.png"
+	SET @PROMOHERO_ALT = "Amana Designed for Worry-Free Durability $10 Pays Your First Week"
+	SET @PROMOHERO_ALIAS = "hero"
+	SET @PROMOHERO_URL = CONCAT("https://www.rentacenter.com/en/brand-rent/Amana",@utm_track,@PROMOHERO_ALIAS)
+ELSEIF @cell == "2" THEN
+	SET @PROMOHERO_UPPER_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f5c3e5fc-9dbe-4618-8c84-dc06790dc0c6.png"
+	SET @PROMOHERO_LOWER_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f025b1e7-b91e-4b31-a65c-369451d2b7de.png"
+	SET @PROMOHERO_ALT = "Amana Designed for Worry-Free Durability"
+	SET @PROMOHERO_ALIAS = "rfihero"
+	SET @PROMOHERO_URL = CONCAT("https://www.rentacenter.com/en/brand-rent/Amana",@utm_track,@PROMOHERO_ALIAS)
+ENDIF
+
+/*  END PROMO HERO VERSION CODE BLOCK  */
+/*  START PRODUCT #01 VERSION CODE BLOCK  */
+
+SET @PRODUCT01_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/6a26643e-a672-4253-b41d-6f6bdc7f602a.png"
+SET @PRODUCT01_LOGO_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/56e285fe-a50c-4542-947f-b0f500c43802.png"
+SET @PRODUCT01_ALT = "Amana 3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Electric Dryer"
+SET @PRODUCT01_ALIAS = "amanalaundry1"
+SET @PRODUCT01_URL = CONCAT("https://www.rentacenter.com/en/appliances/washers-and-dryers/amana-3-5-cu-ft-top-load-washer-%2B-6-5-cu-ft-electric-dryer-am4516eweb/p/100022309",@utm_track,@PRODUCT01_ALIAS)
+
+/*  END PRODUCT #01 VERSION CODE BLOCK  */
+/*  START PRODUCT #02 VERSION CODE BLOCK  */
+
+SET @PRODUCT02_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/c985147a-51f6-4eb5-b196-ec26333dca97.png"
+SET @PRODUCT02_LOGO_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/18a51ae0-608d-43ca-b420-75ce11db7b21.png"
+SET @PRODUCT02_ALT = "Amana 3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Gas Dryer"
+SET @PRODUCT02_ALIAS = "amanalaundry2"
+SET @PRODUCT02_URL = CONCAT("https://www.rentacenter.com/en/appliances/washers-and-dryers/amana-3-5-cu-ft-top-load-washer-%2B-6-5-cu-ft-gas-dryer-am4516gweb/p/100022311",@utm_track,@PRODUCT02_ALIAS)
+
+/*  END PRODUCT #02 VERSION CODE BLOCK  */
+/*  START CINCH VERSION CODE BLOCK  */
+
+SET @CINCH_US1_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/312fb42d-0623-4de3-90f8-7ce36064f8d3.png"
+SET @CINCH_US2_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/cc20bdc2-e628-4585-9acf-e87440b351af.png"
+SET @CINCH_PR1_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/d27b46c7-b32a-4187-a8da-312f09dca8f5.png"
+SET @CINCH_PR2_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/ec590cd9-906b-4ce1-b35f-dc8b49c85978.png"
+SET @CINCH_IMG = @CINCH_US1_IMG
+SET @CINCH_ALT = "Instant Happiness"
+SET @CINCH_ALIAS = "cinch"
+SET @CINCH_URL = CONCAT("https://www.rentacenter.com/en/instant-happiness",@utm_track,@CINCH_ALIAS)
+
+/*  END CINCH VERSION CODE BLOCK  */
+/*  START WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+
+SET @WFG_ADHOC_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/3d40cc17-e5e9-4b98-ace1-291594111bf6.png"
+SET @WFG_TIRES_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/e956c99e-e6f4-4083-8497-096e4f2d262d.png"
+SET @WFG_IMG = @WFG_ADHOC_IMG
+SET @WFG_ALT = "Worry Free Guarantee"
+SET @WFG_ALIAS = "subhead"
+SET @WFG_URL = CONCAT("https://www.rentacenter.com/how-rac-works/",@utm_track,@WFG_ALIAS)
+
+/*  END WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+/*  START WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+
+SET @RFIWFG_ADHOC_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/caad0879-a6d7-42fd-9cd8-b149540c89be.png"
+SET @RFIWFG_TIRES_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/91721fe8-b0e8-46e1-827d-01e786c8b89a.png"
+SET @RFIWFG_IMG = @RFIWFG_ADHOC_IMG
+SET @RFIWFG_ALT = "Worry Free Guarantee"
+SET @RFIWFG_ALIAS = "rfisubhead"
+SET @RFIWFG_URL = CONCAT("https://www.rentacenter.com/how-rac-works/",@utm_track,@RFIWFG_ALIAS)
+
+/*  END WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+/*  START WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+
+SET @WFGPR_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/cf1788f8-8d7e-4901-992c-f48591b81175.png"
+SET @WFGPR_ALT = "Garantia Sin Preocupaciones"
+SET @WFGPR_ALIAS = "subhead"
+SET @WFGPR_URL = CONCAT("https://www.rentacenter.com/es/how-rac-works/rent-a-center-benefits",@utm_track,@WFGPR_ALIAS)
+
+/*  END WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+/*  START SUB-CATEGORY LINKS VERSION CODE BLOCK  */
+
+SET @SUBCATEGORY_BEDROOM_ALIAS = "bedroom"
+SET @SUBCATEGORY_BEDROOM_URL = CONCAT("https://www.rentacenter.com/en/furniture/bedrooms/c/1002",@utm_track,@SUBCATEGORY_BEDROOM_ALIAS)
+
+SET @SUBCATEGORY_DINING_ALIAS = "diningroom"
+SET @SUBCATEGORY_DINING_URL = CONCAT("https://www.rentacenter.com/en/furniture/dining-room-sets/c/1003",@utm_track,@SUBCATEGORY_DINING_ALIAS)
+
+SET @SUBCATEGORY_LIVINGROOM_ALIAS = "livingroom"
+SET @SUBCATEGORY_LIVINGROOM_URL = CONCAT("https://www.rentacenter.com/en/furniture/living-rooms/c/1001",@utm_track,@SUBCATEGORY_LIVINGROOM_ALIAS)
+
+SET @SUBCATEGORY_FRIDGES_ALIAS = "fridges"
+SET @SUBCATEGORY_FRIDGES_URL = CONCAT("https://www.rentacenter.com/en/appliances/refrigerators/c/2002",@utm_track,@SUBCATEGORY_FRIDGES_ALIAS)
+
+SET @SUBCATEGORY_LAUNDRY_ALIAS = "laundry"
+SET @SUBCATEGORY_LAUNDRY_URL = CONCAT("https://www.rentacenter.com/en/appliances/washers-and-dryers/c/2001",@utm_track,@SUBCATEGORY_LAUNDRY_ALIAS)
+
+SET @SUBCATEGORY_AUDIO_ALIAS = "audio"
+SET @SUBCATEGORY_AUDIO_URL = CONCAT("https://www.rentacenter.com/en/electronics/home-theater-audio/c/4002",@utm_track,@SUBCATEGORY_AUDIO_ALIAS)
+
+SET @SUBCATEGORY_GAMING_ALIAS = "gaming"
+SET @SUBCATEGORY_GAMING_URL = CONCAT("https://www.rentacenter.com/en/electronics/video-game-consoles/c/4003",@utm_track,@SUBCATEGORY_GAMING_ALIAS)
+
+SET @SUBCATEGORY_PHONES_ALIAS = "phones"
+SET @SUBCATEGORY_PHONES_URL = CONCAT("https://www.rentacenter.com/smartphones/c/5001",@utm_track,@SUBCATEGORY_PHONES_ALIAS)
+
+SET @SUBCATEGORY_TELEVISIONS_ALIAS = "televisions"
+SET @SUBCATEGORY_TELEVISIONS_URL = CONCAT("https://www.rentacenter.com/en/electronics/tvs/c/4001",@utm_track,@SUBCATEGORY_TELEVISIONS_ALIAS)
+
+SET @SUBCATEGORY_TVSTANDS_ALIAS = "tvstands"
+SET @SUBCATEGORY_TVSTANDS_URL = CONCAT("https://www.rentacenter.com/en/furniture/tv-stands/c/1004",@utm_track,@SUBCATEGORY_TVSTANDS_ALIAS)
+
+SET @SUBCATEGORY_TIRES_ALIAS = "tires"
+SET @SUBCATEGORY_TIRES_URL = CONCAT("https://www.rentacenter.com/en/tires",@utm_track,@SUBCATEGORY_TIRES_ALIAS)
+
+SET @SUBCATEGORY_LAPTOPS_ALIAS = "laptops"
+SET @SUBCATEGORY_LAPTOPS_URL = CONCAT("https://www.rentacenter.com/en/computers/laptops/c/3001",@utm_track,@SUBCATEGORY_LAPTOPS_ALIAS)
+
+/*  END SUB-CATEGORY LINKS VERSION CODE BLOCK  */
+/*  START SOCIAL LINKS VERSION CODE BLOCK  */
+
+SET @SOCIAL_FACEBOOK_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/4/f1108b71-6255-43e5-a382-3136191da0d7.png"
+SET @SOCIAL_FACEBOOK_ALT = "Facebook"
+SET @SOCIAL_FACEBOOK_ALIAS = "fb"
+SET @SOCIAL_FACEBOOK_URL = CONCAT("http://www.facebook.com/rentacenter",@utm_track,@SOCIAL_FACEBOOK_ALIAS)
+
+SET @SOCIAL_INSTAGRAM_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/4/64e7fb41-977e-4349-be12-4f3d4f75520b.png"
+SET @SOCIAL_INSTAGRAM_ALT = "Instagram"
+SET @SOCIAL_INSTAGRAM_ALIAS = "instagram"
+SET @SOCIAL_INSTAGRAM_URL = CONCAT("https://www.instagram.com/rentacenter/",@utm_track,@SOCIAL_INSTAGRAM_ALIAS)
+
+SET @SOCIAL_YOUTUBE_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/4/b0fc2042-e8ba-4746-af82-9531c2a464cf.png"
+SET @SOCIAL_YOUTUBE_ALT = "YouTube"
+SET @SOCIAL_YOUTUBE_ALIAS = "ytube"
+SET @SOCIAL_YOUTUBE_URL = CONCAT("http://www.youtube.com/user/rentacenter",@utm_track,@SOCIAL_YOUTUBE_ALIAS)
+
+SET @SOCIAL_TWITTER_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/4/741941c3-bcf5-4528-a565-2debcb4a2001.png"
+SET @SOCIAL_TWITTER_ALT = "Twitter"
+SET @SOCIAL_TWITTER_ALIAS = "tw"
+SET @SOCIAL_TWITTER_URL = CONCAT("http://twitter.com/rentacenter",@utm_track,@SOCIAL_TWITTER_ALIAS)
+
+SET @SOCIAL_FCBLOG_IMG = "https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/4/368aad6f-dfab-4243-9ef4-a2ac4a6c0404.png"
+SET @SOCIAL_FCBLOG_ALT = "F&C Blog"
+SET @SOCIAL_FCBLOG_ALIAS = "blog"
+SET @SOCIAL_FCBLOG_URL = CONCAT("https://blog.rentacenter.com/",@utm_track,@SOCIAL_FCBLOG_ALIAS)
+
+/*  END SOCIAL LINKS VERSION CODE BLOCK  */
+/*  START LEGAL LINKS VERSION CODE BLOCK  */
+
+SET @VIEWINBROWSER_URL = view_email_url
+SET @VIEWINBROWSER_ALIAS = "viewinbrowser"
+
+SET @UNSUBSCRIBE_ALIAS = "usub"
+SET @UNSUBSCRIBE_URL = CONCAT("https://www.rentacenter.com/unsubscribe",@utm_track,@UNSUBSCRIBE_ALIAS)
+
+SET @PRIVACYPOLICY_ALIAS = "priv"
+SET @PRIVACYPOLICY_URL = CONCAT("https://www.rentacenter.com/privacy-policy",@utm_track,@PRIVACYPOLICY_ALIAS)
+
+/*  END LEGAL LINKS VERSION CODE BLOCK  */
+
+]%%-->
+
+<!--  END VERSION CODE BLOCK  -->
+<!--  START HTML BLOCK  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+	
+<!--  START HEAD BLOCK  -->
+
+<head>
+	
+<!--  START META LINK BLOCK  -->
+	
+<meta charset="utf-8" /> <!-- utf-8 works for most cases -->
+<meta name="viewport" content="width=400" /> <!-- Forcing initial-scale shouldn't be necessary -->
+<!--[if !mso]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Use the latest (edge) version of IE rendering engine -->
+<!--<![endif]-->
+<meta name="x-apple-disable-message-reformatting" /> <!-- Disable auto-scale in iOS 10 Mail entirely -->
+<meta name="apple-mobile-web-app-capable" content="yes" /> <!-- Sets whether a web application runs in full-screen mode -->
+<meta name="format-detection" content="telephone=no, address=no, email=no, date=no, url=no" /> <!-- determines whether or not HTML content will appear as hypertext links -->
+<!-- webfonts -->
+<link href="https://fonts.googleapis.com/css?family=Muli:400,300,400italic,300italic" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800italic,800&subset=latin,latin-ext" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Raleway:400,400italic,200italic,200,600italic,600,800italic,800" rel="stylesheet" type="text/css" />
+	
+<!--  END META LINK BLOCK  -->
+<!--  START WEB-BASED FONTS BLOCK  -->
+
+<!--[if mso]>
+	<xml>
+	<o:OfficeDocumentSettings>
+	<o:AllowPNG/>
+	<o:PixelsPerInch>96</o:PixelsPerInch>
+	</o:OfficeDocumentSettings>
+	</xml>
+
+	<style type="text/css">
+		table, td, a, div, p {
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
+		table {
+			border-collapse: collapse;
+		}
+
+		sup {
+			font-size: 100% !important;
+		}
+	</style> 
+<![endif]-->
+
+<!--  END WEB-BASED FONTS BLOCK  -->
+<!--  START TITLE BLOCK  -->
+	
+<title>Amana Co-Op</title>
+
+<!--  END TITLE BLOCK  -->
+<!--  START STYLE BLOCK  -->
+
+<style type="text/css">
+
+/* *************** BODY & VARIABLE TRAITS *************** */
+/* center email in Android 4.4 */
+body {
+margin: 0 !important;
+}
+
+div[style*="margin: 16px 0"] {
+margin: 0 !important;
+}
+
+/* center email in Samsung Mail */
+#MessageViewBody, #MessageWebViewDiv {
+min-width: 100vw;
+margin: 0 !important;
+zoom: 1 !important;
+}
+
+/* remove blue links - Apple */
+a[x-apple-data-detectors] {
+color: inherit !important;
+text-decoration: none !important;
+font-size: inherit !important;
+font-family: inherit !important;
+font-weight: inherit !important;
+line-height: inherit !important;
+}
+
+*[class="OnMobile370_M_Hide"] {
+display: none;
+}
+
+*[class="OnMobile_Display"] {
+display: none;
+}
+
+body {
+margin: 0;
+padding: 0;
+min-width: 100%;
+background-color: #ededed;
+}
+
+table {
+border-spacing: 0;
+font-family: sans-serif;
+color: #333333;
+}
+
+td {
+padding: 0;
+}
+
+img {
+border: 0;
+}
+
+a {
+color: #000000;
+text-decoration: none;
+}
+
+sup {
+line-height: auto;
+font-size: 75%;
+vertical-align: 20%;
+}
+
+/* Preheader Fix */
+div.preheader { 
+float:right; 
+background-color:#FFFFFF; background-color:transparent; 
+color:#FFFFFF; color:transparent; 
+font-size:1px; 
+line-height:1px; 
+mso-hide:all; 
+Margin:0; 
+padding:0; 
+overflow:hidden; 
+white-space:nowrap; 
+width:1px; 
+height:1px; 
+}
+
+/* *************** CONTAINER TABLE *************** */
+.OuterBody_ContainerTable {
+margin: 0 auto;
+width: 100%;
+max-width: 420px;
+}
+
+/* *************** IMAGES *************** */
+.FullWidth_Image img {
+width: 100%;
+max-width: 420px;
+height: auto;
+}
+
+/* *************** COLORS *************** */
+/* Light Gray: #cdcdcd
+/* Gray: #595959
+/* Dark Gray: #292931
+/* Red: #e7131a
+/* Dark Blue: #034694
+/* Yellow: #ffd200
+/* Light Blue: #0b9fde
+/* Orange: #f58220
+/* Burgundy: #b30f14
+/* Navy Blue: #002561
+/* Link Blue: #0000ee
+/* Green: #9cd84b
+/* Dark Green: #42621a
+
+/* *************** FONTS *************** */
+.Headline {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 20px; line-height: 24px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; margin: 0;
+}
+
+.Title {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; margin: 0;
+}
+
+.Quote {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: italic; margin: 0;
+}
+
+.Body {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; margin: 0;
+}
+
+.Legal {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; margin: 0;
+}
+
+.Primary_Button {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; margin: 0;
+}
+
+.Secondary_Button {
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; margin: 0;
+}
+
+/* *************** EXACT TARGET TABLE *************** */
+.ExactTargetPreview_Table {
+margin-top: 0px;
+border-bottom: solid 2px #0f99d6;
+padding: 20px 10px 20px 10px;
+background-color: #efefef;
+font: 9px Arial, Helvetica, sans-serif;
+color: #58595b;
+}
+
+/* *************** VARIABLES FOR MOBILE VERSION *************** */
+@media screen and (max-width: 420px) and (min-width: 371px) {
+.OnMobile370_D_Hide {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_Display {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_M_Hide {
+display: block !important;
+width: auto !important;
+max-height: inherit !important;
+overflow: visible !important;
+float: none !important;
+}
+
+body[data-outlook-cycle] .OnMobile370_D_Hide {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_Display {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_M_Hide {
+display: block !important;
+margin: 0;
+padding: 0;
+overflow: visible !important;
+width: auto !important;
+max-height: inherit !important;
+visibility: visible !important;
+}
+
+.MobileRemove {
+display: none;
+}
+}
+
+/* *************** VARIABLES FOR MOBILE VERSION UNDER 370PX *************** */
+@media screen and (max-width: 370px) {
+.OnMobile370_D_Hide {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_M_Hide {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_Display {
+display: block !important;
+width: auto !important;
+max-height: inherit !important;
+overflow: visible !important;
+float: none !important;
+}
+
+body[data-outlook-cycle] .OnMobile370_D_Hide {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_M_Hide {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_Display {
+display: block !important;
+margin: 0;
+padding: 0;
+overflow: visible !important;
+width: auto !important;
+max-height: inherit !important;
+visibility: visible !important;
+}
+
+.MobileRemove {
+display: none;
+}
+}
+
+</style>
+
+<!--  END STYLE BLOCK  -->
+
+</head>
+	
+<!--  END HEAD BLOCK  -->
+<!--  START BODY BLOCK  -->
+	
+<body yahoo style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; padding-top: 0px; padding-bottom: 0px; width: 100%;">
+	
+<!--  START EXACT TARGET PREVIEW BOX BLOCK  -->
+	
+<!-- %%[IF _messageContext == "PREVIEW" THEN]%% -->
+<div class="ExactTargetPreview_Table">
+	<strong>ET PREVIEW ONLY</strong> (<em>will not display in an actual email</em>)<br />
+	Creative Version Code: %%creative_version_cd%%<br />
+	Cell Code: %%cell_cd%%<br />
+	Store Number: %%=v(@StoreToFind)=%%<br />	
+</div>
+<!-- %%[ENDIF]%%  -->
+	
+<!--  END EXACT TARGET PREVIEW BOX BLOCK  -->
+<!--  START CONTAINER OPEN TABLE BLOCK  -->
+	
+<table width="100%" align="center" bgcolor="#ededed" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
+<tr>
+<td align="center">
+<!--[if (gte mso)|(IE)]>
+<table width="420" align="center">
+<tr>
+<td>
+<![endif]-->
+<table class="OuterBody_ContainerTable" width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed; border-collapse: collapse; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-right: auto; margin-bottom: 0px; margin-left: auto; max-width: 420px; font-size: 0px; display: block;">
+<tr>
+<td align="center" bgcolor="#ffffff">
+	
+<!--  END CONTAINER OPEN TABLE BLOCK  -->
+<!--  START RAC HEADER BLOCK  -->
+
+<table class="OnMobile370_D_Hide" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 10px; padding-bottom: 10px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center">
+						<a href="%%=RedirectTo(@RACLOGO_URL)=%%" alias="%%=v(@RACLOGO_ALIAS)=%%" target="_blank"><img src="%%=v(@RACLOGO_IMG)=%%" width="82" height="82" alt="%%=v(@RACLOGO_ALT)=%%" title="%%=v(@RACLOGO_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" align="center" style="padding-bottom: 7px; padding-top: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" height="1" bgcolor="#292931">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 1px; line-height: 1px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #292931;">
+										&nbsp;
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="25%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_FURNITURE_URL)=%%" alias="%%=v(@HEADER_FURNITURE_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Furniture</a>
+									</p>
+								</td>
+								<td width="31%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_APPLIANCES_URL)=%%" alias="%%=v(@HEADER_APPLIANCES_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Appliances</a>
+									</p>
+								</td>
+								<td width="26%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_ELECTRONICS_URL)=%%" alias="%%=v(@HEADER_ELECTRONICS_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Electronics</a>
+									</p>
+								</td>
+								<td width="18%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_DEALS_URL)=%%" alias="%%=v(@HEADER_DEALS_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Deals</a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--[if !mso]><!-->
+<div class="OnMobile370_M_Hide" style="width: 0; overflow: hidden; float: left; display: none; max-height: 0px; mso-hide: all;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 10px; padding-bottom: 10px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center">
+						<a href="%%=RedirectTo(@RACLOGO_URL)=%%" alias="%%=v(@RACLOGO_ALIAS)=%%" target="_blank"><img src="%%=v(@RACLOGO_IMG)=%%" width="82" height="82" alt="%%=v(@RACLOGO_ALT)=%%" title="%%=v(@RACLOGO_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" align="center" style="padding-bottom: 7px; padding-top: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" height="1" bgcolor="#292931">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 1px; line-height: 1px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #292931;">
+										&nbsp;
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="25%" align="right">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_FURNITURE_URL)=%%" alias="%%=v(@HEADER_FURNITURE_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Furniture</a>
+									</p>
+								</td>
+								<td width="31%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_APPLIANCES_URL)=%%" alias="%%=v(@HEADER_APPLIANCES_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Appliances</a>
+									</p>
+								</td>
+								<td width="26%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_ELECTRONICS_URL)=%%" alias="%%=v(@HEADER_ELECTRONICS_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Electronics</a>
+									</p>
+								</td>
+								<td width="18%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_DEALS_URL)=%%" alias="%%=v(@HEADER_DEALS_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Deals</a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</div>
+<div class="OnMobile370_Display" style="width: 0; overflow: hidden; float: left; display: none; max-height: 0px; mso-hide: all;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 10px; padding-bottom: 20px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center">
+						<a href="%%=RedirectTo(@RACLOGO_URL)=%%" alias="%%=v(@RACLOGO_ALIAS)=%%" target="_blank"><img src="%%=v(@RACLOGO_IMG)=%%" width="82" height="82" alt="%%=v(@RACLOGO_ALT)=%%" title="%%=v(@RACLOGO_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" align="center" style="padding-bottom: 7px; padding-top: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" height="1" bgcolor="#292931">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 1px; line-height: 1px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #292931;">
+										&nbsp;
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="25%" align="right">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_FURNITURE_URL)=%%" alias="%%=v(@HEADER_FURNITURE_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Furniture</a>
+									</p>
+								</td>
+								<td width="31%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_APPLIANCES_URL)=%%" alias="%%=v(@HEADER_APPLIANCES_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Appliances</a>
+									</p>
+								</td>
+								<td width="26%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_ELECTRONICS_URL)=%%" alias="%%=v(@HEADER_ELECTRONICS_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Electronics</a>
+									</p>
+								</td>
+								<td width="18%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="%%=RedirectTo(@HEADER_DEALS_URL)=%%" alias="%%=v(@HEADER_DEALS_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #595959;">Deals</a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</div>
+<!--<![endif]-->
+
+<!--  END RAC HEADER BLOCK  -->
+<!--  START PROMO HERO BLOCK - WHITE BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 5px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="%%=RedirectTo(@PROMOHERO_URL)=%%" alias="%%=v(@PROMOHERO_ALIAS)=%%" target="_blank"><img src="%%=v(@PROMOHERO_UPPER_IMG)=%%" width="380" alt="%%=v(@PROMOHERO_ALT)=%%" title="%%=v(@PROMOHERO_ALT)=%%" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END PROMO HERO BLOCK - WHITE BG  -->
+<!--%%[ IF @cell == "1" THEN ]%%-->
+<!--  START CTA BLOCK - BLOCK / YELLOW BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#ffd200" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="%%=RedirectTo(@PROMOHERO_URL)=%%" alias="%%=v(@PROMOHERO_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">SHOP AMANA<sup>®</sup> APPLIANCES
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END CTA BLOCK - BLOCK / YELLOW BG  -->
+<!--  START PROMO HERO BLOCK - WHITE BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="%%=RedirectTo(@PROMOHERO_URL)=%%" alias="%%=v(@PROMOHERO_ALIAS)=%%" target="_blank"><img src="%%=v(@PROMOHERO_LOWER_IMG)=%%" width="380" alt="%%=v(@PROMOHERO_ALT)=%%" title="%%=v(@PROMOHERO_ALT)=%%" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END PROMO HERO BLOCK - WHITE BG  -->
+<!--%%[ ELSE ]%%-->
+<!--  START CTA BLOCK - LOWER ROUND / YELLOW BG  -->
+
+<!--[if !mso]><!-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #ffd200; background-color: #ffd200; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#ffd200" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="%%=RedirectTo(@PROMOHERO_URL)=%%" alias="%%=v(@PROMOHERO_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">SHOP AMANA<sup>®</sup> APPLIANCES
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--<![endif]-->
+<!--[if mso]>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#ffd200" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="%%=RedirectTo(@PROMOHERO_URL)=%%" alias="%%=v(@PROMOHERO_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">SHOP AMANA<sup>®</sup> APPLIANCES
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<![endif]-->
+	
+<!--  END CTA BLOCK - LOWER ROUND / YELLOW BG  -->
+<!--%%[ ENDIF ]%%-->
+<!--  START FEATURE PRODUCT BLOCK - GREEN BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border-bottom: 5px solid #ededed; border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px; background-color: #ededed;">
+							<a href="%%=RedirectTo(@PRODUCT01_URL)=%%" alias="%%=v(@PRODUCT01_ALIAS)=%%" target="_blank"><img src="%%=v(@PRODUCT01_IMG)=%%" width="380" alt="%%=v(@PRODUCT01_ALT)=%%" title="%%=v(@PRODUCT01_ALT)=%%" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a><br>
+							<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ededed">
+								<tr>
+									<td width="102" align="center" style="padding-top: 15px;">
+										<a href="%%=RedirectTo(@PRODUCT01_URL)=%%" alias="%%=v(@PRODUCT01_ALIAS)=%%" target="_blank"><img src="%%=v(@PRODUCT01_LOGO_IMG)=%%" width="102" alt="%%=v(@PRODUCT01_ALT)=%%" title="%%=v(@PRODUCT01_ALT)=%%" border="0" style="width: 102px; max-width: 102px; height: auto;" /></a>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" width="100%" style="padding-top: 15px; padding-bottom: 10px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="%%=RedirectTo(@PRODUCT01_URL)=%%" alias="%%=v(@PRODUCT01_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Electric Dryer</a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--[if !mso]><!-->
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #9cd84b; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#9cd84b" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="%%=RedirectTo(@PRODUCT01_URL)=%%" alias="%%=v(@PRODUCT01_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">See Details
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--<![endif]-->
+				<!--[if mso]>
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#9cd84b" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="%%=RedirectTo(@PRODUCT01_URL)=%%" alias="%%=v(@PRODUCT01_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">See Details
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<![endif]-->
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END FEATURE PRODUCT BLOCK - GREEN BG  -->
+<!--  START FEATURE PRODUCT BLOCK - GREEN BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border-bottom: 5px solid #ededed; border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px; background-color: #ededed;">
+							<a href="%%=RedirectTo(@PRODUCT02_URL)=%%" alias="%%=v(@PRODUCT02_ALIAS)=%%" target="_blank"><img src="%%=v(@PRODUCT02_IMG)=%%" width="380" alt="%%=v(@PRODUCT02_ALT)=%%" title="%%=v(@PRODUCT02_ALT)=%%" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a><br>
+							<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ededed">
+								<tr>
+									<td width="102" align="center" style="padding-top: 15px;">
+										<a href="%%=RedirectTo(@PRODUCT02_URL)=%%" alias="%%=v(@PRODUCT02_ALIAS)=%%" target="_blank"><img src="%%=v(@PRODUCT02_LOGO_IMG)=%%" width="102" alt="%%=v(@PRODUCT02_ALT)=%%" title="%%=v(@PRODUCT02_ALT)=%%" border="0" style="width: 102px; max-width: 102px; height: auto;" /></a>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" width="100%" style="padding-top: 15px; padding-bottom: 10px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="%%=RedirectTo(@PRODUCT02_URL)=%%" alias="%%=v(@PRODUCT02_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Gas Dryer</a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--[if !mso]><!-->
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #9cd84b; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#9cd84b" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="%%=RedirectTo(@PRODUCT02_URL)=%%" alias="%%=v(@PRODUCT02_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">See Details
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--<![endif]-->
+				<!--[if mso]>
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#9cd84b" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="%%=RedirectTo(@PRODUCT02_URL)=%%" alias="%%=v(@PRODUCT02_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">See Details
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<![endif]-->
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END FEATURE PRODUCT BLOCK - GREEN BG  -->
+<!--  START FEATURE PRODUCT BLOCK - YELLOW BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="%%=RedirectTo(@CINCH_URL)=%%" alias="%%=v(@CINCH_ALIAS)=%%" target="_blank"><img src="%%=v(@CINCH_IMG)=%%" width="380" alt="%%=v(@CINCH_ALT)=%%" title="%%=v(@CINCH_ALT)=%%" border="0" style="width: 100%; max-width: 380px; height: auto; border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END FEATURE PRODUCT BLOCK - YELLOW BG  -->
+<!--  START CTA BLOCK - LOWER ROUND / YELLOW BG  -->
+
+<!--[if !mso]><!-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #9cd84b; background-color: #9cd84b; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#9cd84b" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="%%=RedirectTo(@CINCH_URL)=%%" alias="%%=v(@CINCH_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">Apply Now
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--<![endif]-->
+<!--[if mso]>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#9cd84b" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="%%=RedirectTo(@CINCH_URL)=%%" alias="%%=v(@CINCH_ALIAS)=%%" target="_blank" style="text-decoration: none; color: #292931;">Apply Now
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<![endif]-->
+	
+<!--  END CTA BLOCK - LOWER ROUND / YELLOW BG  -->
+<!--%%[ IF @cell == "2" THEN ]%%-->
+<!--  START WFG BLOCK - RFI  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="%%=RedirectTo(@RFIWFG_URL)=%%" alias="%%=v(@RFIWFG_ALIAS)=%%" target="_blank"><img src="%%=v(@RFIWFG_IMG)=%%" width="420" alt="%%=v(@RFIWFG_ALT)=%%" title="%%=v(@RFIWFG_ALT)=%%" border="0" style="width: 100%; max-width: 420px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END WFG BLOCK - 4-6MSAC  -->
+<!--%%[ ELSE ]%%-->
+<!--  START WFG BLOCK - 4-6MSAC  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="%%=RedirectTo(@WFG_URL)=%%" alias="%%=v(@WFG_ALIAS)=%%" target="_blank"><img src="%%=v(@WFG_IMG)=%%" width="420" alt="%%=v(@WFG_ALT)=%%" title="%%=v(@WFG_ALT)=%%" border="0" style="width: 100%; max-width: 420px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END WFG BLOCK - 4-6MSAC  -->
+<!--%%[ ENDIF ]%%-->
+<!--  START MORE TO EXPLORE BLOCK  -->
+	
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-bottom: 10px; padding-top: 10px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" style="padding-top: 20px; padding-bottom: 15px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">
+							So Much More to Explore
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-bottom: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="47%" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="%%=RedirectTo(@SUBCATEGORY_LIVINGROOM_URL)=%%" alias="%%=v(@SUBCATEGORY_LIVINGROOM_ALIAS)=%%" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Living&nbsp;Room</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="6%">&nbsp;</td>
+								<td width="47%" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="%%=RedirectTo(@SUBCATEGORY_BEDROOM_URL)=%%" alias="%%=v(@SUBCATEGORY_BEDROOM_ALIAS)=%%" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Bedroom</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-bottom: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="%%=RedirectTo(@SUBCATEGORY_TELEVISIONS_URL)=%%" alias="%%=v(@SUBCATEGORY_TELEVISIONS_ALIAS)=%%" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Televisions</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="6%">&nbsp;</td>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="%%=RedirectTo(@SUBCATEGORY_GAMING_URL)=%%" alias="%%=v(@SUBCATEGORY_GAMING_ALIAS)=%%" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Gaming</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-bottom: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="%%=RedirectTo(@SUBCATEGORY_LAPTOPS_URL)=%%" alias="%%=v(@SUBCATEGORY_LAPTOPS_ALIAS)=%%" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Laptops</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="6%">&nbsp;</td>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="%%=RedirectTo(@SUBCATEGORY_PHONES_URL)=%%" alias="%%=v(@SUBCATEGORY_PHONES_ALIAS)=%%" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Phones</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END MORE TO EXPLORE BLOCK  -->
+<!--  START SOCIAL MEDIA BLOCK  -->
+	
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 15px; padding-bottom: 30px; padding-left: 20px; padding-right: 20px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td align="center">
+						<a href="%%=RedirectTo(@SOCIAL_FACEBOOK_URL)=%%" alias="%%=v(@SOCIAL_FACEBOOK_ALIAS)=%%" target="_blank"><img src="%%=v(@SOCIAL_FACEBOOK_IMG)=%%" width="45" height="45" alt="%%=v(@SOCIAL_FACEBOOK_ALT)=%%" title="%%=v(@SOCIAL_FACEBOOK_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="%%=RedirectTo(@SOCIAL_YOUTUBE_URL)=%%" alias="%%=v(@SOCIAL_YOUTUBE_ALIAS)=%%" target="_blank"><img src="%%=v(@SOCIAL_YOUTUBE_IMG)=%%" width="45" height="45" alt="%%=v(@SOCIAL_YOUTUBE_ALT)=%%" title="%%=v(@SOCIAL_YOUTUBE_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="%%=RedirectTo(@SOCIAL_INSTAGRAM_URL)=%%" alias="%%=v(@SOCIAL_INSTAGRAM_ALIAS)=%%" target="_blank"><img src="%%=v(@SOCIAL_INSTAGRAM_IMG)=%%" width="45" height="45" alt="%%=v(@SOCIAL_INSTAGRAM_ALT)=%%" title="%%=v(@SOCIAL_INSTAGRAM_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="%%=RedirectTo(@SOCIAL_TWITTER_URL)=%%" alias="%%=v(@SOCIAL_TWITTER_ALIAS)=%%" target="_blank"><img src="%%=v(@SOCIAL_TWITTER_IMG)=%%" width="45" height="45" alt="%%=v(@SOCIAL_TWITTER_ALT)=%%" title="%%=v(@SOCIAL_TWITTER_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="%%=RedirectTo(@SOCIAL_FCBLOG_URL)=%%" alias="%%=v(@SOCIAL_FCBLOG_ALIAS)=%%" target="_blank"><img src="%%=v(@SOCIAL_FCBLOG_IMG)=%%" width="45" height="45" alt="%%=v(@SOCIAL_FCBLOG_ALT)=%%" title="%%=v(@SOCIAL_FCBLOG_ALT)=%%" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END SOCIAL MEDIA BLOCK  -->
+<!--  START LEGAL FOOTER BLOCK  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<!--%%[ IF @line1 == "Find a store near you." THEN ]%%-->
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							<a href="%%=RedirectTo(@URL_G19)=%%" alias="%%=v(@ALIAS_G19)=%%" target="_blank" style="color: #595959; text-decoration: none;">
+							<span style="color: #595959; white-space: nowrap;">Find a store near you.</span></a>
+						</p>
+					</td>
+				</tr>
+				<!--%%[ ELSE ]%%-->
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							%%=v(@header)=%%<br />
+							<a href="%%=RedirectTo(@URL_G19)=%%" alias="%%=v(@ALIAS_G19)=%%" target="_blank" style="color: #595959; text-decoration: none;">
+							<span style="color: #595959; white-space: nowrap;">%%=v(@line1)=%%<br />
+							%%=v(@line2)=%%  %%=v(@line3)=%%<br /></span></a>
+							<a href="tel:%%=v(@line6)=%%" alias="%%=v(@ALIAS_G19)=%%" target="_blank" style="color: #595959; text-decoration: none;">
+							<span style="color: #595959; white-space: nowrap;">%%=v(@line6)=%%</span></a>
+						</p>
+					</td>
+				</tr>
+				<!--%%[ ENDIF ]%%-->
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							This email is a Rent-A-Center advertisement. We sent you this email because you signed up for updates of Rent-A-Center offers and events. <a href="%%=RedirectTo(@VIEWINBROWSER_URL)=%%" alias="%%=v(@VIEWINBROWSER_ALIAS)=%%" target="_blank" style="text-decoration: underline;"><strong style="text-decoration: underline; color: #0000ee; font-weight: normal;">View&nbsp;online</strong></a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							If you do not want to receive these email updates, <a href="%%=RedirectTo(@UNSUBSCRIBE_URL)=%%" alias="%%=v(@UNSUBSCRIBE_ALIAS)=%%" target="_blank" style="text-decoration: underline;"><strong style="text-decoration: underline; color: #0000ee; font-weight: normal;">unsubscribe</strong></a>. 
+							<a href="%%=RedirectTo(@PRIVACYPOLICY_URL)=%%" alias="%%=v(@PRIVACYPOLICY_ALIAS)=%%" target="_blank" style="text-decoration: underline;"><strong style="text-decoration: underline; color: #0000ee; font-weight: normal;">Privacy&nbsp;Policy</strong></a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							<!--%%[ IF @cell == "1" THEN ]%%-->
+							**The advertised transaction is a rental-purchase agreement (rent-to-own agreement, consumer rental-purchase agreement or a lease/lease-purchase agreement, depending on your state). <span style="font-weight: bold;">“The No Credit Option”</span> and <span style="font-weight: bold;">“Without Using Credit”</span> mean that this is not a credit, loan, or financing transaction. They do not mean or imply that no inquiry will be made of credit history or creditworthiness. We consider multiple data points in reviewing your application and regularly approve customers with less than perfect credit history. <span style="font-weight: bold;">“6 Months Same As Cash”</span> offer valid in most states on new agreements, and period ends 184 days after start of the new agreement. 6 months same as cash not available in HI, NJ, NY and WV and select franchised locations, which may offer 4-6 Months Same As Cash, depending on product selected. Offer is valid only on new agreements. 4 month period ends 123 days after start of the new agreement. Same as cash availability and term may vary by location. MA and RI: After the same as cash period, you may purchase the merchandise for 50% of the remaining Total Cost, plus applicable sales tax. See Store Manager for complete details. <span style="font-weight: bold;">“Free Delivery & Curbside Pickup”:</span> To comply with local regulations, home deliveries may be made to customer’s doorstep and will not include installation or connection, including large appliances and other oversized items. Not all locations may be able to provide standard services. Free delivery is not available on cash sales. All trademarks, registered trademarks and/or service marks, indicated or otherwise, are the properties of their respective owners. <span style="font-weight: bold;">“Approved to rent up to $3,000 in merchandise”</span> offer is for qualified customers and is valid on a new agreement with a cash price up to approved amount. Approval amount includes outstanding agreements. Total rent-to-own cost will be higher. Actual approval amount will vary based on review of application. Not all will qualify for <span style="font-weight: bold;">“Approved to rent up to $3,000”</span> offer. Qualifying customers may receive larger approval amounts in certain states. Number of payments and total rent-to-own cost will vary by items selected. Does not include applicable sales taxes, optional fees and other charges (such as late charges) that you may incur. Participating locations only. Eligible items only. All items subject to availability and approval. You will not own the merchandise until the total amount necessary to acquire ownership is paid in full or you exercise your early purchase option. Ownership is optional. Customers in NY, HI will also pay a processing fee of $10 ($15 in CA). See Store Manager for complete details.<br><br>
+							^^<span style="font-weight: bold;">“$10 pays your first week”</span> offer is valid only on new agreements entered into through in-store or online transactions prior to 12/31/2022. Customers eligible for this offer will pay $10 for the initial rental period until first renewal, up to twelve days. Additional processing fee of $10 will be added in HI and NY ($15 in CA). Tax, Loss-Damage Waiver (if selected) and Benefits Plus (if selected) are included in initial payment. $1 will be allocated to Benefits Plus (if selected). Any tax due under state law in excess of remaining $9 will be collected with first renewal payment. After the first week, regular rental rates, taxes, Benefits Plus (if selected) and Loss Damage Waiver fees (if selected) will apply. Regular rate, term and total cost vary by item selected. Offers will not reduce the total amount necessary to acquire ownership or purchase-option amounts. Customers eligible for this offer must use Promo Code “1WEEK4TEN” to receive offer. Cannot be combined with any other promotion. Participating locations only. See Store Manager for complete details.<br><br>
+							NYC DCA Disclosure: 00158, Staten Island, SHDL#1119024, EDL#1039548, 00169, Springfield Gardens, SHDL#1118966, EDL#1039555, 00170, Brooklyn, SHDL#1118963, EDL#1039582, 01879, Astoria, SHDL#1118971, EDL#1039553, 01885, Bronx, SHDL#1118972, EDL#1039566, 01886, Bronx, SHDL#1118975, EDL#1039577, 01887, Bronx, SHDL#1118976, EDL#1039560, 01888, Bronx, SHDL#1118978, EDL#1039585, 01889, Brooklyn, SHDL#1118980, EDL#1039559, 01890, Brooklyn, SHDL#1118985, EDL#1039562, 01891, Brooklyn, SHDL#1118988, EDL#1039576, 01911, Hollis, SHDL#1119002, EDL#1039552, 01914, Far Rockaway, SHDL#1119008, EDL#1109743, 01916, Jackson Heights, SHDL#1119026, EDL#1039550, 01923, New York, SHDL#1119027, EDL#1039569, 01931, Richmond Hill, SHDL#1119028, EDL#1039558, 01940, Staten Island, SHDL#1118967, EDL#1039556, 02411, Woodhaven, SHDL#1118979, EDL#1063798, 02417, Brooklyn, SHDL#1119005, EDL#1064216, 02418, Brooklyn, SHDL#1119006, EDL#1063813, 02423, Bronx, SHDL#1119053, EDL#1067040, 02431, Brooklyn, SHDL#1118998, EDL#1070597, 02451, Queens, SHDL#1118999, EDL#1067041, 02458, Bronx, SHDL#1119001, EDL#1067953, 02463, Brooklyn, SHDL#1118993, EDL#1093551, 02464, New York, SHDL#1118996, EDL#1066155, 02469, Brooklyn, SHDL#1119000, EDL#1087466, 02479, Bronx, SHDL#1157622, EDL#1157052, 02482, Bronx, SHDL#1119014, EDL#1095015, 02499, Brooklyn, SHDL#1118969, EDL#1093547, 02504, Brooklyn, SHDL#1118995, EDL#1087469, 02505, Brooklyn, SHDL#1118991, EDL#1080980, 02604, New York, SHDL#1129541, EDL#1129542, 02632, New York, SHDL#1142217, EDL#1142218, 02702, Staten Island, SHDL#1162837, EDL#1162336, 02763, Bronx, SHDL#1180419, EDL#1180944, 02764, New York, SHDL#1174512, EDL#1174515, 02947, Ridgewood, SHDL#1352632, EDL#1352629, 03082, Harlem, SHDL #1443814, EDL #1443811
+							<!--%%[ ELSE ]%%-->
+							**The advertised transaction is a rental-purchase agreement (rent-to-own agreement, consumer rental-purchase agreement or a lease/lease-purchase agreement, depending on your state). <span style="font-weight: bold;">“The No Credit Option”</span> and <span style="font-weight: bold;">“Without Using Credit”</span> mean that this is not a credit, loan, or financing transaction. They do not mean or imply that no inquiry will be made of credit history or creditworthiness. We consider multiple data points in reviewing your application and regularly approve customers with less than perfect credit history. <span style="font-weight: bold;">“Free Delivery & Curbside Pickup”:</span> To comply with local regulations, home deliveries may be made to customer’s doorstep and will not include installation or connection, including large appliances and other oversized items. Not all locations may be able to provide standard services. Free delivery is not available on cash sales. All trademarks, registered trademarks and/or service marks, indicated or otherwise, are the properties of their respective owners. <span style="font-weight: bold;">“Approved to rent up to $3,000 in merchandise”</span> offer is for qualified customers and is valid on a new agreement with a cash price up to approved amount. Approval amount includes outstanding agreements. Total rent-to-own cost will be higher. Actual approval amount will vary based on review of application. Not all will qualify for <span style="font-weight: bold;">“Approved to rent up to $3,000”</span> offer. Qualifying customers may receive larger approval amounts in certain states. Number of payments and total rent-to-own cost will vary by items selected. Does not include applicable sales taxes, optional fees and other charges (such as late charges) that you may incur. Participating locations only. Eligible items only. All items subject to availability and approval. You will not own the merchandise until the total amount necessary to acquire ownership is paid in full or you exercise your early purchase option. Ownership is optional. Customers in NY, HI will also pay a processing fee of $10 ($15 in CA). See Store Manager for complete details.<br><br>
+							NYC DCA Disclosure: 00158, Staten Island, SHDL#1119024, EDL#1039548, 00169, Springfield Gardens, SHDL#1118966, EDL#1039555, 00170, Brooklyn, SHDL#1118963, EDL#1039582, 01879, Astoria, SHDL#1118971, EDL#1039553, 01885, Bronx, SHDL#1118972, EDL#1039566, 01886, Bronx, SHDL#1118975, EDL#1039577, 01887, Bronx, SHDL#1118976, EDL#1039560, 01888, Bronx, SHDL#1118978, EDL#1039585, 01889, Brooklyn, SHDL#1118980, EDL#1039559, 01890, Brooklyn, SHDL#1118985, EDL#1039562, 01891, Brooklyn, SHDL#1118988, EDL#1039576, 01911, Hollis, SHDL#1119002, EDL#1039552, 01914, Far Rockaway, SHDL#1119008, EDL#1109743, 01916, Jackson Heights, SHDL#1119026, EDL#1039550, 01923, New York, SHDL#1119027, EDL#1039569, 01931, Richmond Hill, SHDL#1119028, EDL#1039558, 01940, Staten Island, SHDL#1118967, EDL#1039556, 02411, Woodhaven, SHDL#1118979, EDL#1063798, 02417, Brooklyn, SHDL#1119005, EDL#1064216, 02418, Brooklyn, SHDL#1119006, EDL#1063813, 02423, Bronx, SHDL#1119053, EDL#1067040, 02431, Brooklyn, SHDL#1118998, EDL#1070597, 02451, Queens, SHDL#1118999, EDL#1067041, 02458, Bronx, SHDL#1119001, EDL#1067953, 02463, Brooklyn, SHDL#1118993, EDL#1093551, 02464, New York, SHDL#1118996, EDL#1066155, 02469, Brooklyn, SHDL#1119000, EDL#1087466, 02479, Bronx, SHDL#1157622, EDL#1157052, 02482, Bronx, SHDL#1119014, EDL#1095015, 02499, Brooklyn, SHDL#1118969, EDL#1093547, 02504, Brooklyn, SHDL#1118995, EDL#1087469, 02505, Brooklyn, SHDL#1118991, EDL#1080980, 02604, New York, SHDL#1129541, EDL#1129542, 02632, New York, SHDL#1142217, EDL#1142218, 02702, Staten Island, SHDL#1162837, EDL#1162336, 02763, Bronx, SHDL#1180419, EDL#1180944, 02764, New York, SHDL#1174512, EDL#1174515, 02947, Ridgewood, SHDL#1352632, EDL#1352629, 03082, Harlem, SHDL #1443814, EDL #1443811
+							<!--%%[ ENDIF ]%%-->
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							This email was sent to: <a style="color: #595959; text-decoration: none; outline: none"><span style="text-decoration: none; color: #595959;">%%emailaddr%%</span></a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							This email was sent by:<br>
+							%%Member_Busname%%<br />
+							<a style="color: #595959; text-decoration: none; outline: none"><span style="text-decoration: none; color: #595959;">&#8203;%%Member_Addr%%&#8203;</span></a><br />
+							&#8203;%%Member_City%%&#8203;, &#8203;%%Member_State%%&#8203; &#8203;%%Member_PostalCode%%&#8203;<br />
+							&#8203;%%Member_Country%%&#8203;
+						</p>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END LEGAL FOOTER BLOCK  -->
+<!--  START CONTAINER CLOSE TABLE BLOCK  -->
+	
+</td>
+</tr>
+</table>
+<!--[if (gte mso)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</table>
+	
+<!--  END CONTAINER CLOSE TABLE BLOCK  -->
+	
+<custom name="opencounter" type="tracking"></custom>
+</body>
+	
+<!--  END BODY BLOCK  -->
+		
+</html>
+
+<!--  END HTML BLOCK  -->

@@ -1,0 +1,1385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--  START VERSION CODE BLOCK  -->
+
+<!--%%[
+
+{% assign store_to_find = store.store_id %}
+{% resource rs | id: store_to_find %}
+
+/*  START CELL CODE BLOCK  */
+
+{% if cell_cd == 'C001' %}
+	{% assign cell = '1' %}
+{% elsif cell_cd == 'C002' %}
+	{% assign cell = '2' %}
+{% endif %}
+
+/*  END CELL CODE BLOCK  */
+/*  START TESTING / ASSIGNMENT CODE BLOCK  */
+
+{% assign cell = '1' %}
+
+/*  END TESTING / ASSIGNMENT CODE BLOCK  */
+/*  START TRACKING UTM CODE BLOCK  */
+
+{% assign tracking_pt1_source = 'zeta' %}
+{% assign tracking_pt2_utmsource = 'eml-etrgt-rac-' %}
+{% assign tracking_pt3_deploydates = '20220705' %}
+{% assign tracking_pt6_sequence = '001' %}
+{% assign tracking_pt7_campaign = 'amana-co-op' %}
+
+{% assign utm_track = '?utm_medium=email&utm_source=' | append: tracking_pt1_source | append: '&utm_campaign=' | append: tracking_pt2_utmsource | append: tracking_pt3_deploydates | append: '-em' | append: tracking_pt6_sequence | append: '-' | append: tracking_pt7_campaign | append: '&et_mid=' | append: {{message_uid}} | append: '&utm_content=' %}
+
+{% assign utm_track_slash = '/?utm_medium=email&utm_source=' | append: tracking_pt1_source | append: '&utm_campaign=' | append: tracking_pt2_utmsource | append: tracking_pt3_deploydates | append: '-em' | append: tracking_pt6_sequence | append: '-' | append: tracking_pt7_campaign | append: '&et_mid=' | append: {{message_uid}} | append: '&utm_content=' %}
+
+{% assign utm_track_and = '&utm_medium=email&utm_source=' | append: tracking_pt1_source | append: '&utm_campaign=' | append: tracking_pt2_utmsource | append: tracking_pt3_deploydates | append: '-em' | append: tracking_pt6_sequence | append: '-' | append: tracking_pt7_campaign | append: '&et_mid=' | append: {{message_uid}} | append: '&utm_content=' %}
+
+/*  END TRACKING UTM CODE BLOCK  */
+/*  START USER BASE INFORMATION CODE BLOCK  */
+
+{% assign first_name = first_name | capitalize %}
+{% assign last_name = last_name | capitalize %}
+{% assign email = email_address %}
+
+{% if store_to_find %}
+	{% assign header = 'My Store: ' %}
+	{% assign line1 = rs.props.address_line_1 %}
+	{% assign line2 = rs.props.address_city | append: ', ' | append: rs.props.address_state %}
+	{% assign line3 = rs.props.address_zip %}
+	{% assign line6 = rs.props.phone %}
+	{% assign alias_g19 = 'location' %}
+	{% assign url_g19 = 'https://www.google.com/maps/dir//' | append: line1 | replace: ' ', '+' | append: '+' | append: line2 | replace: ' '. '+' | append: utm_track_and | append: alias_g19 %}
+{% else %}
+	{% assign header = '' %}
+	{% assign line1 = 'Find a store near you.' %}
+	{% assign line2 = '' %}
+	{% assign line3 = '' %}
+	{% assign line6 = '' %}
+	{% assign alias_g19 = 'findastore' %}
+	{% assign url_g19 = 'https://locations.rentacenter.com' | append: utm_track | append: alias_g19 %}
+{% endif %}
+
+/*  END USER BASE INFORMATION CODE BLOCK  */
+/*  START USER EXTRA INFORMATION CODE BLOCK  */
+
+{% if custom_03 %}
+	{% assign agreement_number = custom_03 %}
+{% else %}
+	{% assign agreement_number = '' %}
+{% endif %}
+
+{% if custom_04 %}
+	{% assign rented_item = custom_04 %}
+{% else %}
+	{% assign rented_item = '' %}
+{% endif %}
+
+{% if custom_02 %}
+	{% assign before_approval_amount = custom_02 %}
+	{% assign approval_amount = before_approval_amount | currency: 2, 'en-US' %}
+{% else %}
+	{% assign approval_amount = '' %}
+{% endif %}
+
+{% if custom_01 %}
+	{% assign before_cbc_amount = custom_01 %}
+	{% assign cbc_amount = before_cbc_amount | currency: 2, 'en-US' %}
+{% else %}
+	{% assign cbc_amount = '' %}
+{% endif %}
+
+{% if custom_05 %}
+	{% assign before_preapproval_amount_1 = custom_05 %}
+	{% assign preapproval_amount_1 = before_preapproval_amount_1 | currency: 2, 'en-US' %}
+{% else %}
+	{% assign preapproval_amount_1 = '' %}
+{% endif %}
+
+{% if custom_02 %}
+	{% assign before_preapproval_amount_2 = custom_02 %}
+	{% assign preapproval_amount_2 = before_preapproval_amount_2 | currency: 2, 'en-US' %}
+{% else %}
+	{% assign preapproval_amount_2 = '' %}
+{% endif %}
+
+/*  END USER EXTRA INFORMATION CODE BLOCK  */
+/*  START CREATIVE VERSION CODE BLOCK  */
+
+{% assign cv = '1 %}
+
+/*  END CREATIVE VERSION CODE BLOCK  */
+/*  START SUBJECT LINE / PREHEADER CODE BLOCK  */
+
+{% if cell == '1' %}
+	/* SUBJECT LINES */
+	{% if first_name %}
+		{% assign sl_a = '$10 Pays Your First Week On Amana® Appliances, ' | append: first_name %}
+	{% else %}
+		{% assign sl_a = '$10 Pays Your First Week On Amana® Appliances' %}
+	{% endif %}
+
+	{% assign sl_b = 'Get Your Amana® Appliances The Worry-Free Way' %}
+
+	/* PREHEADERS */
+	{% assign ph_a = 'Plus FREE Delivery! Get your appliances the worry-free way.' %}
+	{% assign ph_b = 'Shop now and $10 pays your first week.' %}
+{% else %}
+	/* SUBJECT LINES */
+	{% if first_name %}
+		{% assign sl_a = 'Rent Amana® Appliances Worry-Free, ' | append: first_name %}
+	{% else %}
+		{% assign sl_a = 'Rent Amana® Appliances Worry-Free' %}
+	{% endif %}
+
+	{% if first_name %}
+		{% assign sl_b = 'Save Energy, Money And Worry With Amana®, ' | append: first_name %}
+	{% else %}
+		{% assign sl_b = 'Save Energy, Money And Worry With Amana®' %}
+	{% endif %}
+
+	/* PREHEADERS */
+	{% assign ph_a = 'Enjoy FREE delivery and flexible payment options on laundry and kitchen appliances.' %}
+	{% assign ph_b = 'Rent energy-efficient Amana® laundry and kitchen appliances with flexible payments.' %}
+{% endif %}
+
+{% assign sl = sl_a %}
+{% assign ph = ph_a %}
+
+{% assign sbj_line = sl %}
+{% assign preheader = ph %}
+{% assign sbj_line_cd = 'SL_' | append: cv | append: '_A' %}
+{% assign preheader_cd = 'PH_' | append: cv | append: '_A' %}
+
+/*  END SUBJECT LINE / PREHEADER CODE BLOCK  */
+/*  START HEADER LINKS VERSION CODE BLOCK  */
+
+{% assign raclogo_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/RACSimpleLogo2.png' %}
+{% assign raclogo_alt = 'RAC' %}
+{% assign raclogo_alias = 'racl' %}
+{% assign raclogo_url = 'https://www.rentacenter.com/' | append: utm_track | append: raclogo_alias %}
+
+{% assign header_furniture_alias = 'furniture' %}
+{% assign header_furniture_url = 'https://www.rentacenter.com/furniture/c/1000' | append: utm_track | append: header_furniture_alias %}
+
+{% assign header_appliances_alias = 'appliances' %}
+{% assign header_appliances_url = 'https://www.rentacenter.com/appliances/c/2000' | append: utm_track | append: header_appliances_alias %}
+
+{% assign header_electronics_alias = 'electronics' %}
+{% assign header_electronics_url = 'https://www.rentacenter.com/electronics/c/4000' | append: utm_track | append: header_electronics_alias %}
+
+{% assign header_deals_alias = 'shopdeals' %}
+{% assign header_deals_url = 'https://www.rentacenter.com/deals/c/6000' | append: utm_track | append: header_deals_alias %}
+
+/*  END HEADER LINKS VERSION CODE BLOCK  */
+/*  START PROMO HERO VERSION CODE BLOCK  */
+
+{% if cell == '1' %}
+	{% assign promohero_upper_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f5c3e5fc-9dbe-4618-8c84-dc06790dc0c6.png' %}
+	{% assign promohero_lower_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f025b1e7-b91e-4b31-a65c-369451d2b7de.png' %}
+	{% assign promohero_alt = 'Amana Designed for Worry-Free Durability $10 Pays Your First Week' %}
+	{% assign promohero_alias = 'hero' %}
+	{% assign promohero_url = 'https://www.rentacenter.com/en/brand-rent/Amana' | append: utm_track | append: promohero_alias %}
+{% elsif cell == '2' %}
+	{% assign promohero_upper_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f5c3e5fc-9dbe-4618-8c84-dc06790dc0c6.png' %}
+	{% assign promohero_lower_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/f025b1e7-b91e-4b31-a65c-369451d2b7de.png' %}
+	{% assign promohero_alt = 'Amana Designed for Worry-Free Durability' %}
+	{% assign promohero_alias = 'rfihero' %}
+	{% assign promohero_url = 'https://www.rentacenter.com/en/brand-rent/Amana' | append: utm_track | append: promohero_alias %}
+{% endif %}
+
+/*  END PROMO HERO VERSION CODE BLOCK  */
+/*  START PRODUCT #01 VERSION CODE BLOCK  */
+
+{% assign product01_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/6a26643e-a672-4253-b41d-6f6bdc7f602a.png' %}
+{% assign product01_logo_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/56e285fe-a50c-4542-947f-b0f500c43802.png' %}
+{% assign product01_alt = 'Amana 3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Electric Dryer' %}
+{% assign product01_alias = 'amanalaundry1' %}
+{% assign product01_url = 'https://www.rentacenter.com/en/appliances/washers-and-dryers/amana-3-5-cu-ft-top-load-washer-%2B-6-5-cu-ft-electric-dryer-am4516eweb/p/100022309' | append: utm_track | append: product01_alias %}
+
+/*  END PRODUCT #01 VERSION CODE BLOCK  */
+/*  START PRODUCT #02 VERSION CODE BLOCK  */
+
+{% assign product02_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/c985147a-51f6-4eb5-b196-ec26333dca97.png' %}
+{% assign product02_logo_img = 'https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/8/18a51ae0-608d-43ca-b420-75ce11db7b21.png' %}
+{% assign product02_alt = 'Amana 3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Gas Dryer' %}
+{% assign product02_alias = 'amanalaundry2' %}
+{% assign product02_url = 'https://www.rentacenter.com/en/appliances/washers-and-dryers/amana-3-5-cu-ft-top-load-washer-%2B-6-5-cu-ft-gas-dryer-am4516gweb/p/100022311' | append: utm_track | append: product02_alias %}
+
+/*  END PRODUCT #02 VERSION CODE BLOCK  */
+/*  START CINCH VERSION CODE BLOCK  */
+
+{% assign cinch_us1_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/Updated_Cinch_US1.png' %}
+{% assign cinch_us2_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/Updated_Cinch_US2.png' %}
+{% assign cinch_pr1_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/Updated_Cinch_PR1.png' %}
+{% assign cinch_pr2_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/Updated_Cinch_PR2.png' %}
+{% assign cinch_img = cinch_us1_img %}
+{% assign cinch_alt = 'Instant Happiness' %}
+{% assign cinch_alias = 'cinch' %}
+{% assign cinch_url = 'https://www.rentacenter.com/en/instant-happiness' | append: utm_track | append: cinch_alias %}
+
+/*  END CINCH VERSION CODE BLOCK  */
+/*  START WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+
+{% assign wfg_adhoc_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/WFG_MSAC_Adhoc.png' %}
+{% assign wfg_tires_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/WFG_MSAC_Tires.png' %}
+{% assign wfg_img = wfg_adhoc_img %}
+{% assign wfg_alt = 'Worry Free Guarantee' %}
+{% assign wfg_alias = 'subhead' %}
+{% assign wfg_url = 'https://www.rentacenter.com/how-rac-works/' | append: utm_track | append: wfg_alias %}
+
+/*  END WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+/*  START WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+
+{% assign rfiwfg_adhoc_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/WFG_RFI_Adhoc.png' %}
+{% assign rfiwfg_tires_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/WFG_RFI_Tires.png' %}
+{% assign rfiwfg_img = rfiwfg_adhoc_img %}
+{% assign rfiwfg_alt = 'Worry Free Guarantee' %}
+{% assign rfiwfg_alias = 'rfisubhead' %}
+{% assign rfiwfg_url = 'https://www.rentacenter.com/how-rac-works/' | append: utm_track | append: rfiwfg_alias %}
+
+/*  END WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+/*  START WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+
+{% assign wfgpr_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/WFG_PR.png' %}
+{% assign wfgpr_alt = 'Garantia Sin Preocupaciones' %}
+{% assign wfgpr_alias = 'subhead' %}
+{% assign wfgpr_url = 'https://www.rentacenter.com/es/how-rac-works/' | append: utm_track | append: wfgpr_alias %}
+
+/*  END WORRY FREE GUARANTEE IMAGE VERSION CODE BLOCK  */
+/*  START SUB-CATEGORY LINKS VERSION CODE BLOCK  */
+
+{% assign subcat_bedroom_alias = 'bedroom' %}
+{% assign subcat_bedroom_url = 'https://www.rentacenter.com/en/furniture/bedrooms/c/1002' | append: utm_track | append: subcat_bedroom_alias %}
+
+{% assign subcat_dining_alias = 'diningroom' %}
+{% assign subcat_dining_url = 'https://www.rentacenter.com/en/furniture/dining-room-sets/c/1003' | append: utm_track | append: subcat_dining_alias %}
+
+{% assign subcat_livingroom_alias = 'livingroom' %}
+{% assign subcat_livingroom_url = 'https://www.rentacenter.com/en/furniture/living-rooms/c/1001' | append: utm_track | append: subcat_livingroom_alias %}
+
+{% assign subcat_fridges_alias = 'fridges' %}
+{% assign subcat_fridges_url = 'https://www.rentacenter.com/en/appliances/refrigerators/c/2002' | append: utm_track | append: subcat_fridges_alias %}
+
+{% assign subcat_laundry_alias = 'laundry' %}
+{% assign subcat_laundry_url = 'https://www.rentacenter.com/en/appliances/washers-and-dryers/c/2001' | append: utm_track | append: subcat_laundry_alias %}
+
+{% assign subcat_audio_alias = 'audio' %}
+{% assign subcat_audio_url = 'https://www.rentacenter.com/en/electronics/home-theater-audio/c/4002' | append: utm_track | append: subcat_audio_alias %}
+
+{% assign subcat_gaming_alias = 'gaming' %}
+{% assign subcat_gaming_url = 'https://www.rentacenter.com/en/electronics/video-game-consoles/c/4003' | append: utm_track | append: subcat_gaming_alias %}
+
+{% assign subcat_phones_alias = 'phones' %}
+{% assign subcat_phones_url = 'https://www.rentacenter.com/smartphones/c/5001' | append: utm_track | append: subcat_phones_alias %}
+
+{% assign subcat_tvs_alias = 'televisions' %}
+{% assign subcat_tvs_url = 'https://www.rentacenter.com/en/electronics/tvs/c/4001' | append: utm_track | append: subcat_tvs_alias %}
+
+{% assign subcat_tvstands_alias = 'tvstands' %}
+{% assign subcat_tvstands_url = 'https://www.rentacenter.com/en/furniture/tv-stands/c/1004' | append: utm_track | append: subcat_tvstands_alias %}
+
+{% assign subcat_tires_alias = 'tires' %}
+{% assign subcat_tires_url = 'https://www.rentacenter.com/en/tires' | append: utm_track | append: subcat_tires_alias %}
+
+{% assign subcat_laptops_alias = 'laptops' %}
+{% assign subcat_laptops_url = 'https://www.rentacenter.com/en/computers/laptops/c/3001' | append: utm_track | append: subcat_laptops_alias %}
+
+/*  END SUB-CATEGORY LINKS VERSION CODE BLOCK  */
+/*  START SOCIAL LINKS VERSION CODE BLOCK  */
+
+{% assign social_facebook_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/SocialIcon_Facebook.png' %}
+{% assign social_facebook_alt = 'Facebook' %}
+{% assign social_facebook_alias = 'fb' %}
+{% assign social_facebook_url = 'http://www.facebook.com/rentacenter' | append: utm_track | append: social_facebook_alias %}
+
+{% assign social_instagram_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/SocialIcon_Instagram.png' %}
+{% assign social_instagram_alt = 'Instagram' %}
+{% assign social_instagram_alias = 'instagram' %}
+{% assign social_instagram_url = 'https://www.instagram.com/rentacenter/' | append: utm_track | append: social_instagram_alias %}
+
+{% assign social_youtube_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/SocialIcon_YouTube.png' %}
+{% assign social_youtube_alt = 'YouTube' %}
+{% assign social_youtube_alias = 'ytube' %}
+{% assign social_youtube_url = 'http://www.youtube.com/user/rentacenter' | append: utm_track | append: social_youtube_alias %}
+
+{% assign social_twitter_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/SocialIcon_Twitter.png' %}
+{% assign social_twitter_alt = 'Twitter' %}
+{% assign social_twitter_alias = 'tw' %}
+{% assign social_twitter_url = 'http://twitter.com/rentacenter' | append: utm_track | append: social_twitter_alias %}
+
+{% assign social_fcblog_img = 'https://email-editor-assets.s3.amazonaws.com/images/fd190f99e7d6f4eaa04425210d094950/RAC%20Base%20Email%20Images/SocialIcon_Blog.png' %}
+{% assign social_fcblog_alt = 'F&C Blog' %}
+{% assign social_fcblog_alias = 'blog' %}
+{% assign social_fcblog_url = 'https://blog.rentacenter.com/' | append: utm_track | append: social_fcblog_alias %}
+
+/*  END SOCIAL LINKS VERSION CODE BLOCK  */
+/*  START LEGAL LINKS VERSION CODE BLOCK  */
+
+{% assign viewinbrowser_url = view_email_in_browser_link %}
+{% assign viewinbrowser_alias = 'viewinbrowser' %}
+
+{% assign unsubscribe_alias = 'usub' %}
+{% assign unsubscribe_url = 'https://www.rentacenter.com/unsubscribe' | append: utm_track | append: unsubscribe_alias %}
+
+{% assign privacypolicy_alias = 'priv' %}
+{% assign privacypolicy_url = 'https://www.rentacenter.com/privacy-policy' | append: utm_track | append: privacypolicy_alias %}
+
+/*  END LEGAL LINKS VERSION CODE BLOCK  */
+
+]%%-->
+
+<!--  END VERSION CODE BLOCK  -->
+<!--  START HTML BLOCK  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+	
+<!--  START HEAD BLOCK  -->
+
+<head>
+	
+<!--  START META LINK BLOCK  -->
+	
+<meta charset="utf-8" /> <!-- utf-8 works for most cases -->
+<meta name="viewport" content="width=400" /> <!-- Forcing initial-scale shouldn't be necessary -->
+<!--[if !mso]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Use the latest (edge) version of IE rendering engine -->
+<!--<![endif]-->
+<meta name="x-apple-disable-message-reformatting" /> <!-- Disable auto-scale in iOS 10 Mail entirely -->
+<meta name="apple-mobile-web-app-capable" content="yes" /> <!-- Sets whether a web application runs in full-screen mode -->
+<meta name="format-detection" content="telephone=no, address=no, email=no, date=no, url=no" /> <!-- determines whether or not HTML content will appear as hypertext links -->
+<!-- webfonts -->
+<link href="https://fonts.googleapis.com/css?family=Muli:400,300,400italic,300italic" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800italic,800&subset=latin,latin-ext" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Raleway:400,400italic,200italic,200,600italic,600,800italic,800" rel="stylesheet" type="text/css" />
+	
+<!--  END META LINK BLOCK  -->
+<!--  START WEB-BASED FONTS BLOCK  -->
+
+<!--[if mso]>
+	<xml>
+	<o:OfficeDocumentSettings>
+	<o:AllowPNG/>
+	<o:PixelsPerInch>96</o:PixelsPerInch>
+	</o:OfficeDocumentSettings>
+	</xml>
+
+	<style type="text/css">
+		table, td, a, div, p {
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
+		table {
+			border-collapse: collapse;
+		}
+
+		sup {
+			font-size: 100% !important;
+		}
+	</style> 
+<![endif]-->
+
+<!--  END WEB-BASED FONTS BLOCK  -->
+<!--  START TITLE BLOCK  -->
+	
+<title>Amana Co-Op</title>
+
+<!--  END TITLE BLOCK  -->
+<!--START STYLE BLOCK-->
+
+<style type="text/css">
+
+/*BODY & VARIABLE TRAITS*/
+/* center email in Android 4.4 */
+body {
+margin: 0 !important;
+}
+
+div[style*="margin: 16px 0"] {
+margin: 0 !important;
+}
+
+/* center email in Samsung Mail */
+#MessageViewBody, #MessageWebViewDiv {
+min-width: 100vw;
+margin: 0 !important;
+zoom: 1 !important;
+}
+
+/* remove blue links - Apple */
+a[x-apple-data-detectors] {
+color: inherit !important;
+text-decoration: none !important;
+font-size: inherit !important;
+font-family: inherit !important;
+font-weight: inherit !important;
+line-height: inherit !important;
+}
+
+*[class="OnMobile370_M_Hide"] {
+display: none;
+}
+
+*[class="OnMobile_Display"] {
+display: none;
+}
+
+body {
+margin: 0;
+padding: 0;
+min-width: 100%;
+background-color: #ededed;
+}
+
+table {
+border-spacing: 0;
+font-family: sans-serif;
+color: #333333;
+}
+
+td {
+padding: 0;
+}
+
+img {
+border: 0;
+}
+
+a {
+color: #000000;
+text-decoration: none;
+}
+
+sup {
+line-height: auto;
+font-size: 75%;
+vertical-align: 20%;
+}
+
+/* Preheader Fix */
+div.preheader { 
+float:right; 
+background-color:#FFFFFF; background-color:transparent; 
+color:#FFFFFF; color:transparent; 
+font-size:1px; 
+line-height:1px; 
+mso-hide:all; 
+Margin:0; 
+padding:0; 
+overflow:hidden; 
+white-space:nowrap; 
+width:1px; 
+height:1px; 
+}
+
+/*CONTAINER TABLE*/
+.OuterBody_ContainerTable {
+margin: 0 auto;
+width: 100%;
+max-width: 420px;
+}
+
+/*IMAGES*/
+.FullWidth_Image img {
+width: 100%;
+max-width: 420px;
+height: auto;
+}
+
+/*COLORS*/
+/* Light Gray: #cdcdcd
+/* Gray: #595959
+/* Dark Gray: #292931
+/* Red: #e7131a
+/* Dark Blue: #034694
+/* Yellow: #ffd200
+/* Light Blue: #0b9fde
+/* Orange: #f58220
+/* Burgundy: #b30f14
+/* Navy Blue: #002561
+/* Link Blue: #0000ee
+/* Green: #9cd84b
+/* Dark Green: #42621a
+
+/*VARIABLES FOR MOBILE VERSION*/
+@media screen and (max-width: 420px) and (min-width: 371px) {
+.OnMobile370_D_Hide {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_Display {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_M_Hide {
+display: block !important;
+width: auto !important;
+max-height: inherit !important;
+overflow: visible !important;
+float: none !important;
+}
+
+body[data-outlook-cycle] .OnMobile370_D_Hide {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_Display {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_M_Hide {
+display: block !important;
+margin: 0;
+padding: 0;
+overflow: visible !important;
+width: auto !important;
+max-height: inherit !important;
+visibility: visible !important;
+}
+
+.MobileRemove {
+display: none;
+}
+}
+
+/*VARIABLES FOR MOBILE VERSION UNDER 370PX*/
+@media screen and (max-width: 370px) {
+.OnMobile370_D_Hide {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_M_Hide {
+max-height: 0 !important; /* Gmail*/
+display: none !important; /* Generic*/
+mso-hide: all; /* Outlook clients*/
+overflow: hidden; /* Generic */
+visibility: hidden !important;
+}
+
+.OnMobile370_Display {
+display: block !important;
+width: auto !important;
+max-height: inherit !important;
+overflow: visible !important;
+float: none !important;
+}
+
+body[data-outlook-cycle] .OnMobile370_D_Hide {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_M_Hide {
+display: none;
+}
+
+body[data-outlook-cycle] .OnMobile370_Display {
+display: block !important;
+margin: 0;
+padding: 0;
+overflow: visible !important;
+width: auto !important;
+max-height: inherit !important;
+visibility: visible !important;
+}
+
+.MobileRemove {
+display: none;
+}
+}
+
+</style>
+
+<!--END STYLE BLOCK-->
+
+</head>
+	
+<!--  END HEAD BLOCK  -->
+<!--  START BODY BLOCK  -->
+	
+<body yahoo style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; padding-top: 0px; padding-bottom: 0px; width: 100%;">
+	
+<!--  START CONTAINER OPEN TABLE BLOCK  -->
+	
+<table width="100%" align="center" bgcolor="#ededed" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
+<tr>
+<td align="center">
+<!--[if (gte mso)|(IE)]>
+<table width="420" align="center">
+<tr>
+<td>
+<![endif]-->
+<table class="OuterBody_ContainerTable" width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed; border-collapse: collapse; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-right: auto; margin-bottom: 0px; margin-left: auto; max-width: 420px; font-size: 0px; display: block;">
+<tr>
+<td align="center" bgcolor="#ffffff">
+	
+<!--  END CONTAINER OPEN TABLE BLOCK  -->
+<!--  START MAIN BODY CONTENT BLOCK  -->
+<!--  START RAC HEADER BLOCK  -->
+
+<table class="OnMobile370_D_Hide" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 10px; padding-bottom: 10px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center">
+						<a href="{{raclogo_url}}" alias="{{raclogo_alias}}" target="_blank"><img src="{{raclogo_img}}" width="82" height="82" alt="{{raclogo_alt}}" title="{{raclogo_alt}}" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" align="center" style="padding-bottom: 7px; padding-top: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%">
+									<hr style="width: 100%; height: 1px; background-color: #292931;">
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="25%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #595959;">
+										<a href="{{header_furniture_url}}" alias="{{header_furniture_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Furniture</a>
+									</p>
+								</td>
+								<td width="31%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #595959;">
+										<a href="{{header_appliances_url}}" alias="{{header_appliances_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Appliances</a>
+									</p>
+								</td>
+								<td width="26%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="{{header_electronics_url}}" alias="{{header_electronics_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Electronics</a>
+									</p>
+								</td>
+								<td width="18%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="{{header_deals_url}}" alias="{{header_deals_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Deals</a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--[if !mso]><!-->
+<div class="OnMobile370_M_Hide" style="width: 0; overflow: hidden; float: left; display: none; max-height: 0px; mso-hide: all;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 10px; padding-bottom: 10px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center">
+						<a href="{{raclogo_url}}" alias="{{raclogo_alias}}" target="_blank"><img src="{{raclogo_img}}" width="82" height="82" alt="{{raclogo_alt}}" title="{{raclogo_alt}}" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" align="center" style="padding-bottom: 7px; padding-top: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%">
+									<hr style="width: 100%; height: 1px; background-color: #292931;">
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="25%" align="right">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #595959;">
+										<a href="{{header_furniture_url}}" alias="{{header_furniture_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Furniture</a>
+									</p>
+								</td>
+								<td width="31%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #595959;">
+										<a href="{{header_appliances_url}}" alias="{{header_appliances_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Appliances</a>
+									</p>
+								</td>
+								<td width="26%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="{{header_electronics_url}}" alias="{{header_electronics_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Electronics</a>
+									</p>
+								</td>
+								<td width="18%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 15px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="{{header_deals_url}}" alias="{{header_deals_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Deals</a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</div>
+<div class="OnMobile370_Display" style="width: 0; overflow: hidden; float: left; display: none; max-height: 0px; mso-hide: all;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 10px; padding-bottom: 20px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center">
+						<a href="{{raclogo_url}}" alias="{{raclogo_alias}}" target="_blank"><img src="{{raclogo_img}}" width="82" height="82" alt="{{raclogo_alt}}" title="{{raclogo_alt}}" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" align="center" style="padding-bottom: 7px; padding-top: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%">
+									<hr style="width: 100%; height: 1px; background-color: #292931;">
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="25%" align="right">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: right; margin: 0; color: #595959;">
+										<a href="{{header_furniture_url}}" alias="{{header_furniture_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Furniture</a>
+									</p>
+								</td>
+								<td width="31%" align="center">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #595959;">
+										<a href="{{header_appliances_url}}" alias="{{header_appliances_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Appliances</a>
+									</p>
+								</td>
+								<td width="26%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="{{header_electronics_url}}" alias="{{header_electronics_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Electronics</a>
+									</p>
+								</td>
+								<td width="18%" align="left">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 13px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+										<a href="{{header_deals_url}}" alias="{{header_deals_alias}}" target="_blank" style="text-decoration: none; color: #595959;">Deals</a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</div>
+<!--<![endif]-->
+
+<!--  END RAC HEADER BLOCK  -->
+<!--  START PROMO HERO BLOCK - WHITE BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 5px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="{{promohero_url}}" alias="{{promohero_alias}}" target="_blank"><img src="{{promohero_upper_img}}" width="380" alt="{{promohero_alt}}" title="{{promohero_alt}}" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END PROMO HERO BLOCK - WHITE BG  -->
+<!-- {% if cell == '1' %} -->
+<!--  START CTA BLOCK - BLOCK / YELLOW BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#ffd200" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="{{promohero_url}}" alias="{{promohero_alias}}" target="_blank" style="text-decoration: none; color: #292931;">SHOP AMANA<sup>®</sup> APPLIANCES
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END CTA BLOCK - BLOCK / YELLOW BG  -->
+<!--  START PROMO HERO BLOCK - WHITE BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="{{promohero_url}}" alias="{{promohero_alias}}" target="_blank"><img src="{{promohero_lower_img}}" width="380" alt="{{promohero_alt}}" title="{{promohero_alt}}" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END PROMO HERO BLOCK - WHITE BG  -->
+<!-- {% else %} -->
+<!--  START CTA BLOCK - LOWER ROUND / YELLOW BG  -->
+
+<!--[if !mso]><!-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #ffd200; background-color: #ffd200; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#ffd200" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="{{promohero_url}}" alias="{{promohero_alias}}" target="_blank" style="text-decoration: none; color: #292931;">SHOP AMANA<sup>®</sup> APPLIANCES
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--<![endif]-->
+<!--[if mso]>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#ffd200" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="{{promohero_url}}" alias="{{promohero_alias}}" target="_blank" style="text-decoration: none; color: #292931;">SHOP AMANA<sup>®</sup> APPLIANCES
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<![endif]-->
+	
+<!--  END CTA BLOCK - LOWER ROUND / YELLOW BG  -->
+<!-- {% endif %} -->
+<!--  START FEATURE PRODUCT BLOCK - GREEN BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border-bottom: 5px solid #ededed; border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px; background-color: #ededed;">
+							<a href="{{product01_url}}" alias="{{product01_alias}}" target="_blank"><img src="{{product01_img}}" width="380" alt="{{product01_alt}}" title="{{product01_alt}}" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a><br>
+							<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ededed">
+								<tr>
+									<td width="102" align="center" style="padding-top: 15px;">
+										<a href="{{product01_url}}" alias="{{product01_alias}}" target="_blank"><img src="{{product01_logo_img}}" width="102" alt="{{product01_alt}}" title="{{product01_alt}}" border="0" style="width: 102px; max-width: 102px; height: auto;" /></a>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" width="100%" style="padding-top: 15px; padding-bottom: 10px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="{{product01_url}}" alias="{{product01_alias}}" target="_blank" style="text-decoration: none; color: #292931;">3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Electric Dryer</a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--[if !mso]><!-->
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #9cd84b; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#9cd84b" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="{{product01_url}}" alias="{{product01_alias}}" target="_blank" style="text-decoration: none; color: #292931;">See Details
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--<![endif]-->
+				<!--[if mso]>
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#9cd84b" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="{{product01_url}}" alias="{{product01_alias}}" target="_blank" style="text-decoration: none; color: #292931;">See Details
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<![endif]-->
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END FEATURE PRODUCT BLOCK - GREEN BG  -->
+<!--  START FEATURE PRODUCT BLOCK - GREEN BG  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border-bottom: 5px solid #ededed; border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px; background-color: #ededed;">
+							<a href="{{product02_url}}" alias="{{product02_alias}}" target="_blank"><img src="{{product02_img}}" width="380" alt="{{product02_alt}}" title="{{product02_alt}}" border="0" style="width: 100%; max-width: 380px; height: auto;" /></a><br>
+							<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ededed">
+								<tr>
+									<td width="102" align="center" style="padding-top: 15px;">
+										<a href="{{product02_url}}" alias="{{product02_alias}}" target="_blank"><img src="{{product02_logo_img}}" width="102" alt="{{product02_alt}}" title="{{product02_alt}}" border="0" style="width: 102px; max-width: 102px; height: auto;" /></a>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" width="100%" style="padding-top: 15px; padding-bottom: 10px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="{{product02_url}}" alias="{{product02_alias}}" target="_blank" style="text-decoration: none; color: #292931;">3.5 Cu. Ft. Washer and 6.5 Cu. Ft. Gas Dryer</a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--[if !mso]><!-->
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #9cd84b; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#9cd84b" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; background-color: #9cd84b; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="{{product02_url}}" alias="{{product02_alias}}" target="_blank" style="text-decoration: none; color: #292931;">See Details
+											&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<!--<![endif]-->
+				<!--[if mso]>
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#9cd84b" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="{{product02_url}}" alias="{{product02_alias}}" target="_blank" style="text-decoration: none; color: #292931;">See Details
+										&nbsp;<img src="https://image.rentacenter-marketing.com/lib/fe6315707c6c01787514/m/5/23308fc5-38a9-4ee2-b579-7bc69af1184a.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<![endif]-->
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END FEATURE PRODUCT BLOCK - GREEN BG  -->
+<!--  START CINCH IMG & CTA BLOCK  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px; padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="{{cinch_url}}" alias="{{cinch_alias}}" target="_blank"><img src="{{cinch_img}}" width="380" alt="{{cinch_alt}}" title="{{cinch_alt}}" border="0" style="width: 100%; max-width: 380px; height: auto; border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--[if !mso]><!-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<div style="border: 5px solid #9cd84b; background-color: #9cd84b; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px;">
+							<table width="100%" cellpadding="0" cellspacing="0" border="0">
+								<tr>
+									<td width="100%" align="center" bgcolor="#9cd84b" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; padding-top: 5px; padding-bottom: 5px;">
+										<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+											<a href="{{cinch_url}}" alias="{{cinch_alias}}" target="_blank" style="text-decoration: none; color: #292931;">Apply Now
+											&nbsp;<img src="https://email-editor-assets.s3.amazonaws.com/images/3202c58ada01c4f3f03e03709ebc936d/Base%20Main%20Images/Arrow-Gray.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+										</p>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--<![endif]-->
+<!--[if mso]>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-left: 20px; padding-right: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="100%" align="center" bgcolor="#9cd84b" style="padding-top: 10px; padding-bottom: 10px;">
+									<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: uppercase; font-style: normal; text-align: center; margin: 0; color: #292931;">
+										<a href="{{cinch_url}}" alias="{{cinch_alias}}" target="_blank" style="text-decoration: none; color: #292931;">Apply Now
+										&nbsp;<img src="https://email-editor-assets.s3.amazonaws.com/images/3202c58ada01c4f3f03e03709ebc936d/Base%20Main%20Images/Arrow-Gray.png" alt="" width="6" height="12" border="0" style="width: 6px; max-width: 6px;" /></a>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<![endif]-->
+	
+<!--  END CINCH IMG & CTA BLOCK  -->
+<!-- {% if cell == '2' %} -->
+<!--  START WFG BLOCK - RFI  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="{{rfiwfg_url}}" alias="{{rfiwfg_alias}}" target="_blank"><img src="{{rfiwfg_img}}" width="420" alt="{{rfiwfg_alt}}" title="{{rfiwfg_alt}}" border="0" style="width: 100%; max-width: 420px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+	
+<!--  END WFG BLOCK - RFI  -->
+<!-- {% else %} -->
+<!--  START WFG BLOCK - 4-6MSAC  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+	<tr>
+		<td align="center" style="padding-top: 20px;">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" bgcolor="#ffffff">
+						<a href="{{wfg_url}}" alias="{{wfg_alias}}" target="_blank"><img src="{{wfg_img}}" width="420" alt="{{wfg_alt}}" title="{{wfg_alt}}" border="0" style="width: 100%; max-width: 420px; height: auto;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+		
+<!--  END WFG BLOCK - 4-6MSAC  -->
+<!-- {% endif %} -->
+<!--  START MORE TO EXPLORE BLOCK  -->
+	
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-bottom: 10px; padding-top: 10px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td width="100%" align="center" style="padding-top: 20px; padding-bottom: 15px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">
+							So Much More to Explore
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-bottom: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="47%" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="{{subcat_livingroom_url}}" alias="{{subcat_livingroom_alias}}" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Living&nbsp;Room</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="6%">&nbsp;</td>
+								<td width="47%" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="{{subcat_bedroom_url}}" alias="{{subcat_bedroom_alias}}" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Bedroom</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-bottom: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="{{subcat_tvs_url}}" alias="{{subcat_tvs_alias}}" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Televisions</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="6%">&nbsp;</td>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="{{subcat_gaming_url}}" alias="{{subcat_gaming_alias}}" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Gaming</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-bottom: 10px; padding-left: 20px; padding-right: 20px;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="{{subcat_laptops_url}}" alias="{{subcat_laptops_alias}}" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Laptops</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="6%">&nbsp;</td>
+								<td width="47%" height="48" align="center" valign="middle" style="align-content: center;">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="100%" align="center" valign="middle" style="border: 1px solid #034694; padding-bottom: 10px; padding-top: 10px;">
+												<a href="{{subcat_phones_url}}" alias="{{subcat_phones_alias}}" target="_blank" style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 16px; line-height: 20px; font-weight: bold; text-decoration: none; text-transform: none; font-style: normal; text-align: center; margin: 0; color: #034694;">Phones</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END MORE TO EXPLORE BLOCK  -->
+<!--  START SOCIAL MEDIA BLOCK  -->
+	
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 15px; padding-bottom: 30px; padding-left: 20px; padding-right: 20px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td align="center">
+						<a href="{{social_facebook_url}}" alias="{{social_facebook_alias}}" target="_blank"><img src="{{social_facebook_img}}" width="45" height="45" alt="{{social_facebook_alt}}" title="{{social_facebook_alt}}" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="{{social_youtube_url}}" alias="{{social_youtube_alias}}" target="_blank"><img src="{{social_youtube_img}}" width="45" height="45" alt="{{social_youtube_alt}}" title="{{social_youtube_alt}}" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="{{social_instagram_url}}" alias="{{social_instagram_alias}}" target="_blank"><img src="{{social_instagram_img}}" width="45" height="45" alt="{{social_instagram_alt}}" title="{{social_instagram_alt}}" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="{{social_twitter_url}}" alias="{{social_twitter_alias}}" target="_blank"><img src="{{social_twitter_img}}" width="45" height="45" alt="{{social_twitter_alt}}" title="{{social_twitter_alt}}" border="0" style="display: block;" /></a>
+					</td>
+					<td align="center">
+						<a href="{{social_fcblog_url}}" alias="{{social_fcblog_alias}}" target="_blank"><img src="{{social_fcblog_img}}" width="45" height="45" alt="{{social_fcblog_alt}}" title="{{social_fcblog_alt}}" border="0" style="display: block;" /></a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END SOCIAL MEDIA BLOCK  -->
+<!--  START LEGAL FOOTER BLOCK  -->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF">
+	<tr>
+		<td align="center" style="padding-top: 0px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;" valign="top">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<!-- {% if line1 == 'Find a store near you.' %} -->
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							<a href="{{url_g19}}" alias="{{alias_g19}}" target="_blank" style="color: #595959; text-decoration: none;">
+							<span style="color: #595959; white-space: nowrap;">Find a store near you.</span></a>
+						</p>
+					</td>
+				</tr>
+				<!-- {% else %} -->
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							{{header}}<br />
+							<a href="{{url_g19}}" alias="{{alias_g19}}" target="_blank" style="color: #595959; text-decoration: none;">
+							<span style="color: #595959; white-space: nowrap;">{{line1}}<br />
+							{{line2}} {{line3}}<br /></span></a>
+							<a href="tel:{{line6}}" alias="{{alias_g19}}" target="_blank" style="color: #595959; text-decoration: none;">
+							<span style="color: #595959; white-space: nowrap;">{{line6}}</span></a>
+						</p>
+					</td>
+				</tr>
+			   <!-- {% endif %} -->
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							This email is a Rent-A-Center advertisement. We sent you this email because you signed up for updates of Rent-A-Center offers and events. <a href="{{viewinbrowser_url}}" alias="{{viewinbrowser_alias}}" target="_blank" style="text-decoration: underline;"><strong style="text-decoration: underline; color: #0000ee; font-weight: normal;">View&nbsp;online</strong></a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							If you do not want to receive these email updates, <a href="{{unsubscribe_url}}" alias="{{unsubscribe_alias}}" target="_blank" style="text-decoration: underline;"><strong style="text-decoration: underline; color: #0000ee; font-weight: normal;">unsubscribe</strong></a>. 
+							<a href="{{privacypolicy_url}}" alias="{{privacypolicy_alias}}" target="_blank" style="text-decoration: underline;"><strong style="text-decoration: underline; color: #0000ee; font-weight: normal;">Privacy&nbsp;Policy</strong></a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							<!-- {% if cell == '1' %} -->
+							**The advertised transaction is a rental-purchase agreement (rent-to-own agreement, consumer rental-purchase agreement or a lease/lease-purchase agreement, depending on your state). <span style="font-weight: bold;">“The No Credit Option”</span> and <span style="font-weight: bold;">“Without Using Credit”</span> mean that this is not a credit, loan, or financing transaction. They do not mean or imply that no inquiry will be made of credit history or creditworthiness. We consider multiple data points in reviewing your application and regularly approve customers with less than perfect credit history. <span style="font-weight: bold;">“6 Months Same As Cash”</span> offer valid in most states on new agreements, and period ends 184 days after start of the new agreement. 6 months same as cash not available in HI, NJ, NY and WV and select franchised locations, which may offer 4-6 Months Same As Cash, depending on product selected. Offer is valid only on new agreements. 4 month period ends 123 days after start of the new agreement. Same as cash availability and term may vary by location. MA and RI: After the same as cash period, you may purchase the merchandise for 50% of the remaining Total Cost, plus applicable sales tax. See Store Manager for complete details. <span style="font-weight: bold;">“Free Delivery & Curbside Pickup”:</span> To comply with local regulations, home deliveries may be made to customer’s doorstep and will not include installation or connection, including large appliances and other oversized items. Not all locations may be able to provide standard services. Free delivery is not available on cash sales. All trademarks, registered trademarks and/or service marks, indicated or otherwise, are the properties of their respective owners. <span style="font-weight: bold;">“Approved to rent up to $3,000 in merchandise”</span> offer is for qualified customers and is valid on a new agreement with a cash price up to approved amount. Approval amount includes outstanding agreements. Total rent-to-own cost will be higher. Actual approval amount will vary based on review of application. Not all will qualify for <span style="font-weight: bold;">“Approved to rent up to $3,000”</span> offer. Qualifying customers may receive larger approval amounts in certain states. Number of payments and total rent-to-own cost will vary by items selected. Does not include applicable sales taxes, optional fees and other charges (such as late charges) that you may incur. Participating locations only. Eligible items only. All items subject to availability and approval. You will not own the merchandise until the total amount necessary to acquire ownership is paid in full or you exercise your early purchase option. Ownership is optional. Customers in NY, HI will also pay a processing fee of $10 ($15 in CA). See Store Manager for complete details.<br><br>
+							^^<span style="font-weight: bold;">“$10 pays your first week”</span> offer is valid only on new agreements entered into through in-store or online transactions prior to 12/31/2022. Customers eligible for this offer will pay $10 for the initial rental period until first renewal, up to twelve days. Additional processing fee of $10 will be added in HI and NY ($15 in CA). Tax, Loss-Damage Waiver (if selected) and Benefits Plus (if selected) are included in initial payment. $1 will be allocated to Benefits Plus (if selected). Any tax due under state law in excess of remaining $9 will be collected with first renewal payment. After the first week, regular rental rates, taxes, Benefits Plus (if selected) and Loss Damage Waiver fees (if selected) will apply. Regular rate, term and total cost vary by item selected. Offers will not reduce the total amount necessary to acquire ownership or purchase-option amounts. Customers eligible for this offer must use Promo Code “1WEEK4TEN” to receive offer. Cannot be combined with any other promotion. Participating locations only. See Store Manager for complete details.<br><br>
+							NYC DCA Disclosure: 00158, Staten Island, SHDL#1119024, EDL#1039548, 00169, Springfield Gardens, SHDL#1118966, EDL#1039555, 00170, Brooklyn, SHDL#1118963, EDL#1039582, 01879, Astoria, SHDL#1118971, EDL#1039553, 01885, Bronx, SHDL#1118972, EDL#1039566, 01886, Bronx, SHDL#1118975, EDL#1039577, 01887, Bronx, SHDL#1118976, EDL#1039560, 01888, Bronx, SHDL#1118978, EDL#1039585, 01889, Brooklyn, SHDL#1118980, EDL#1039559, 01890, Brooklyn, SHDL#1118985, EDL#1039562, 01891, Brooklyn, SHDL#1118988, EDL#1039576, 01911, Hollis, SHDL#1119002, EDL#1039552, 01914, Far Rockaway, SHDL#1119008, EDL#1109743, 01916, Jackson Heights, SHDL#1119026, EDL#1039550, 01923, New York, SHDL#1119027, EDL#1039569, 01931, Richmond Hill, SHDL#1119028, EDL#1039558, 01940, Staten Island, SHDL#1118967, EDL#1039556, 02411, Woodhaven, SHDL#1118979, EDL#1063798, 02417, Brooklyn, SHDL#1119005, EDL#1064216, 02418, Brooklyn, SHDL#1119006, EDL#1063813, 02423, Bronx, SHDL#1119053, EDL#1067040, 02431, Brooklyn, SHDL#1118998, EDL#1070597, 02451, Queens, SHDL#1118999, EDL#1067041, 02458, Bronx, SHDL#1119001, EDL#1067953, 02463, Brooklyn, SHDL#1118993, EDL#1093551, 02464, New York, SHDL#1118996, EDL#1066155, 02469, Brooklyn, SHDL#1119000, EDL#1087466, 02479, Bronx, SHDL#1157622, EDL#1157052, 02482, Bronx, SHDL#1119014, EDL#1095015, 02499, Brooklyn, SHDL#1118969, EDL#1093547, 02504, Brooklyn, SHDL#1118995, EDL#1087469, 02505, Brooklyn, SHDL#1118991, EDL#1080980, 02604, New York, SHDL#1129541, EDL#1129542, 02632, New York, SHDL#1142217, EDL#1142218, 02702, Staten Island, SHDL#1162837, EDL#1162336, 02763, Bronx, SHDL#1180419, EDL#1180944, 02764, New York, SHDL#1174512, EDL#1174515, 02947, Ridgewood, SHDL#1352632, EDL#1352629, 03082, Harlem, SHDL #1443814, EDL #1443811
+							<!-- {% elsif cell == '2' %} -->
+							**The advertised transaction is a rental-purchase agreement (rent-to-own agreement, consumer rental-purchase agreement or a lease/lease-purchase agreement, depending on your state). <span style="font-weight: bold;">“The No Credit Option”</span> and <span style="font-weight: bold;">“Without Using Credit”</span> mean that this is not a credit, loan, or financing transaction. They do not mean or imply that no inquiry will be made of credit history or creditworthiness. We consider multiple data points in reviewing your application and regularly approve customers with less than perfect credit history. <span style="font-weight: bold;">“Free Delivery & Curbside Pickup”:</span> To comply with local regulations, home deliveries may be made to customer’s doorstep and will not include installation or connection, including large appliances and other oversized items. Not all locations may be able to provide standard services. Free delivery is not available on cash sales. All trademarks, registered trademarks and/or service marks, indicated or otherwise, are the properties of their respective owners. <span style="font-weight: bold;">“Approved to rent up to $3,000 in merchandise”</span> offer is for qualified customers and is valid on a new agreement with a cash price up to approved amount. Approval amount includes outstanding agreements. Total rent-to-own cost will be higher. Actual approval amount will vary based on review of application. Not all will qualify for <span style="font-weight: bold;">“Approved to rent up to $3,000”</span> offer. Qualifying customers may receive larger approval amounts in certain states. Number of payments and total rent-to-own cost will vary by items selected. Does not include applicable sales taxes, optional fees and other charges (such as late charges) that you may incur. Participating locations only. Eligible items only. All items subject to availability and approval. You will not own the merchandise until the total amount necessary to acquire ownership is paid in full or you exercise your early purchase option. Ownership is optional. Customers in NY, HI will also pay a processing fee of $10 ($15 in CA). See Store Manager for complete details.<br><br>
+							NYC DCA Disclosure: 00158, Staten Island, SHDL#1119024, EDL#1039548, 00169, Springfield Gardens, SHDL#1118966, EDL#1039555, 00170, Brooklyn, SHDL#1118963, EDL#1039582, 01879, Astoria, SHDL#1118971, EDL#1039553, 01885, Bronx, SHDL#1118972, EDL#1039566, 01886, Bronx, SHDL#1118975, EDL#1039577, 01887, Bronx, SHDL#1118976, EDL#1039560, 01888, Bronx, SHDL#1118978, EDL#1039585, 01889, Brooklyn, SHDL#1118980, EDL#1039559, 01890, Brooklyn, SHDL#1118985, EDL#1039562, 01891, Brooklyn, SHDL#1118988, EDL#1039576, 01911, Hollis, SHDL#1119002, EDL#1039552, 01914, Far Rockaway, SHDL#1119008, EDL#1109743, 01916, Jackson Heights, SHDL#1119026, EDL#1039550, 01923, New York, SHDL#1119027, EDL#1039569, 01931, Richmond Hill, SHDL#1119028, EDL#1039558, 01940, Staten Island, SHDL#1118967, EDL#1039556, 02411, Woodhaven, SHDL#1118979, EDL#1063798, 02417, Brooklyn, SHDL#1119005, EDL#1064216, 02418, Brooklyn, SHDL#1119006, EDL#1063813, 02423, Bronx, SHDL#1119053, EDL#1067040, 02431, Brooklyn, SHDL#1118998, EDL#1070597, 02451, Queens, SHDL#1118999, EDL#1067041, 02458, Bronx, SHDL#1119001, EDL#1067953, 02463, Brooklyn, SHDL#1118993, EDL#1093551, 02464, New York, SHDL#1118996, EDL#1066155, 02469, Brooklyn, SHDL#1119000, EDL#1087466, 02479, Bronx, SHDL#1157622, EDL#1157052, 02482, Bronx, SHDL#1119014, EDL#1095015, 02499, Brooklyn, SHDL#1118969, EDL#1093547, 02504, Brooklyn, SHDL#1118995, EDL#1087469, 02505, Brooklyn, SHDL#1118991, EDL#1080980, 02604, New York, SHDL#1129541, EDL#1129542, 02632, New York, SHDL#1142217, EDL#1142218, 02702, Staten Island, SHDL#1162837, EDL#1162336, 02763, Bronx, SHDL#1180419, EDL#1180944, 02764, New York, SHDL#1174512, EDL#1174515, 02947, Ridgewood, SHDL#1352632, EDL#1352629, 03082, Harlem, SHDL #1443814, EDL #1443811
+							<!-- {% endif %} -->
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							This email was sent to: <a style="color: #595959; text-decoration: none; outline: none"><span style="text-decoration: none; color: #595959;">{{email_address}}</span></a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td align="left" style="padding-bottom: 10px; padding-top: 10px;">
+						<p style="font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-size: 12px; line-height: 15px; font-weight: normal; text-decoration: none; text-transform: none; font-style: normal; text-align: left; margin: 0; color: #595959;">
+							This email was sent by:<br>
+							Rent-A-Center<br />
+							<a style="color: #595959; text-decoration: none; outline: none"><span style="text-decoration: none; color: #595959;">5501 Headquarters Dr.</span></a><br />
+							Plano, TX 75024<br />
+							United States
+						</p>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--  END LEGAL FOOTER BLOCK  -->
+<!--  END MAIN BODY CONTENT BLOCK  -->
+<!--  START CONTAINER CLOSE TABLE BLOCK  -->
+	
+</td>
+</tr>
+</table>
+<!--[if (gte mso)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</table>
+	
+<!--  END CONTAINER CLOSE TABLE BLOCK  -->
+	
+<custom name="opencounter" type="tracking"></custom>
+</body>
+	
+<!--  END BODY BLOCK  -->
+		
+</html>
+
+<!--  END HTML BLOCK  -->
